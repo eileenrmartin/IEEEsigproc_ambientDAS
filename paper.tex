@@ -1,0 +1,99 @@
+\documentclass[11pt]{amsart}
+\usepackage{geometry}                % See geometry.pdf to learn the layout options. There are lots.
+\geometry{letterpaper}                   % ... or a4paper or a5paper or ... 
+%\geometry{landscape}                % Activate for for rotated page geometry
+%\usepackage[parfill]{parskip}    % Activate to begin paragraphs with an empty line rather than an indent
+\usepackage{graphicx}
+\usepackage{amssymb}
+\usepackage{epstopdf}
+\DeclareGraphicsRule{.tif}{png}{.png}{`convert #1 `dirname #1`/`basename #1 .tif`.png}
+
+
+%For final version of Special issue article: For each paper in the special issue, up to 20 single column double-spaced pages, 11 point font size, including figures, tables and references. The total number of figures and tables may be up to 10 (sub-figures in (a), (b), (c), etc. counted separately). The total number of references may be up to 30. There should be at least 1.25" margin on left and right sides, and 1" margin from top and bottom. The figures and tables should be placed in the center of the column, and not tightly embedded into the text column. For some special issues, the page limit may be even less if more papers are included. In any event, check with the guest editors before writing the full manuscript.
+
+% White paper due Feb 20, up to 4 pages length
+% more info: https://signalprocessingsociety.org/sites/default/files/uploads/special_issues_deadlines/SPM_SI_geo_sp.pdf
+
+\title{*Catchy short title*: \\
+automated noise processing for near-surface characterization with seismic data from a fiber network}
+\author{Eileen R. Martin, Fantine Huot/Yinbin Ma(*you guys figure out order*), Biondo L. Biondi, Steve Cole, Martin Karrenbach}
+%\date{}                                           % Activate to display a given date or no date
+
+\begin{document}
+\maketitle
+
+\begin{abstract} 
+*****abstract words here *****
+\end{abstract}
+
+
+\section*{Motivation}
+****what's ambient noise used for?****
+
+****why use DAS? brief overview of its use****
+
+
+
+\section*{New Contributions}
+****what's new that we're doing, how it's different from what's been done before****
+
+
+
+\section*{Background Theory}
+****ambient noise background****
+
+
+
+\section*{Experimental Overview}
+****overview of the array, potential noise sources, ambient noise field****
+
+
+
+\section*{Data Processing}
+***overview of data processing workflow****
+
+\subsection*{Estimating Sensor Coupling Response}
+***talk about different responses from different sensors and how to compensate for these, use many earthquakes for relative responses****
+
+\subsection*{Localizing Persistent Noise Sources}
+***talk about localizing these things (motors, traffic, etc....) and show a little beamforming in small 1D parts of the array bandpassed to these persistent frequency peaks***
+
+\subsection*{Removing Earthquakes and Quarry Blasts}
+****talk about getting rid of big events lighting up whole array****
+
+\subsection*{Removing Vehicle Noise}
+****talk about clustering and comparing noise sources-including rotations and stretch of example noise****
+
+\subsection*{Removing Correlated Noise Sources}
+*****talk about detecting temporally and spatially correlated noise sources, more generally than cars****
+
+\subsection*{Traveltime Picking}
+*** talk about traveltime picking before Rayleigh wave tomography****
+
+\subsection*{Tomography}
+**** talk about how near-surface tomography is set up****
+
+\section*{Results}
+***overview of results****
+
+\subsection*{Convergence Rate Improvement Due to Pre-Processing}
+***show comparisons of cross-correlations with/without sensor coupling response, and with scaling by energy per channel of cross-correlations (also show spectrum per channel of these)****
+\\
+******show comparisons of convergence rates with/without vehicles removed, and with vehicles just removed via STA/LTA jumps****
+
+
+\subsection*{Tomography Along Array Lines}
+***show tomography results along multiple lines on campus****
+
+
+\section*{Summary}
+****summary words****
+
+
+\begin{thebibliography}{10}
+\bibitem{somebibitem} ***first bibitem***
+
+
+\end{thebibliography}
+
+\end{document}  
