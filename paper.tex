@@ -1,5 +1,5 @@
 \documentclass[11pt]{amsart}
-\usepackage{geometry}                % See geometry.pdf to learn the layout options. There are lots.
+\usepackage[margin=1in]{geometry}                % See geometry.pdf to learn the layout options. There are lots.
 \geometry{letterpaper}                   % ... or a4paper or a5paper or ... 
 %\geometry{landscape}                % Activate for for rotated page geometry
 %\usepackage[parfill]{parskip}    % Activate to begin paragraphs with an empty line rather than an indent
@@ -14,95 +14,139 @@
 % White paper due Feb 20, up to 4 pages length
 % more info: https://signalprocessingsociety.org/sites/default/files/uploads/special_issues_deadlines/SPM_SI_geo_sp.pdf
 
-\title{*Catchy short title*: \\
-automated noise processing for near-surface characterization with seismic data from a fiber network}
-\author{Eileen R. Martin, Fantine Huot/Yinbin Ma(*you guys figure out order*), Biondo L. Biondi, Steve Cole, Martin Karrenbach}
+\title{****title*****}
+\author{Eileen R. Martin, Fantine Huot, Yinbin Ma, Robert Cieplicki, Biondo L. Biondi}
 %\date{}                                           % Activate to display a given date or no date
 
 \begin{document}
 \maketitle
 
-\begin{abstract} 
-*****abstract words here - 150-200 Eileen*****
-\end{abstract}
+\section*{Motivation}  *****2/3 page Eileen****
+
+\section*{Significance} ******2/3 page Eileen****
+
+\section*{Outline of the paper}
+	\begin{enumerate}
+	\item Abstract/summary
+	\item Introduction 
+		\begin{itemize}
+		\item *****words about intro, motivation****
+		\end{itemize}
+	\item Related work
+		\begin{enumerate}
+		\item Background on ambient noise: how it works that for the cost of just laying down receivers, you can extract signals mimicking those of an active seismic survey with a source at any receiver ****add citations******
+		\item Background on Distributed Acoustic Sensing: how it works ****add citations****, how it has been used so far ****add citations****
+		\item Examples of ambient seismic noise studies using Distributed Acoustic Sensing *****add citations****
+		\end{enumerate}
+	\item Data Processing: we process the noise we record so that it mimicks data that would be recorded if the noise field followed theoretical ideals. Some common strategies include ****citations to review like papers*****
+		\begin{enumerate}
+		\item Clustering of data to speed up noise field exploration
+		\item How to use earthquakes to estimate sensor coupling 
+		\item Detection of localized, persistent noise sources 
+		\item Removing vehicle noise: design of filter for cars, for each piece of noise find nearest cluster to see if it's a car, then filter out the car while preserving the use of other noise in the same time and place
+		\end{enumerate}
+	\item Results
+		\begin{enumerate}
+		\item Comparison of convergence rates of virtual source response function estimates ****cite Seats 2012**** (both cross-correlation and cross-coherence) for traditional processing and new processing methods
+		\item Velocity model resulting from ambient noise tomography
+		\end{enumerate}
+	\item Conclusions
+	\item Acknowledgments
+	\end{enumerate}
 
 
-\section*{Motivation}
-****what's ambient noise used for? - 200-250 Eileen****
-
-****why use DAS? brief overview of its use****
-
+%\begin{abstract} 
+%*****abstract words here - 150-200 Eileen*****
+%\end{abstract}
 
 
-\section*{New Contributions}
-****what's new that we're doing, how it's different from what's been done before - 150 Eileen, little Fantine & Yinbin****
+%\section*{Motivation}
+%****what's ambient noise used for? - 200-250 Eileen****
 
-
-
-\section*{Background Theory}
-****ambient noise background - 150-220 Eileen****
+%****why use DAS? brief overview of its use****
 
 
 
-\section*{Experimental Overview}
-****overview of the array, potential noise sources, ambient noise field - 200 Eileen****
-****Figure : 2 panels: Installation + map****
+%\section*{New Contributions}
+%****what's new that we're doing, how it's different from what's been done before - 150 Eileen, little Fantine \& Yinbin****
 
 
 
-\section*{Data Processing}
-***overview of data processing workflow - 200-250 Eileen****
-***Figure : stft plots at a few different spots***
-***Mention whitening here***
-***Mention earthqukes and quarry blasts here***
+%\section*{Background Theory}
+%****ambient noise background - 150-220 Eileen****
 
-\subsection*{Estimating Sensor Coupling Response}
-***talk about different responses from different sensors and how to compensate for these, use many earthquakes for relative responses****
-***100 Eileen***
-***Figure : Boxed earthquake recording + response versus channel***
 
-% \subsection*{Localizing Persistent Noise Sources}
-% ***talk about localizing these things (motors, traffic, etc....) and show a little beamforming in small 1D parts of the array bandpassed to these persistent frequency peaks***
 
-% \subsection*{Removing Earthquakes and Quarry Blasts}
-% ****talk about getting rid of big events lighting up whole array****
+%\section*{Experimental Overview}
+%****overview of the array, potential noise sources, ambient noise field - 200 Eileen****
+%****Figure : 2 panels: Installation + map****
 
-\subsection*{Removing Vehicle Noise}
-****talk about clustering and comparing noise sources****
-***500 Fantine & Yinbin***
-***Figures : Before/after car mute + clusters and projection on map***
-***Little Eileen for sentence about why cars are a problem***
 
-% \subsection*{Removing Correlated Noise Sources}
-% *****talk about detecting temporally and spatially correlated noise sources, more generally than cars****
 
-% \subsection*{Traveltime Picking}
-% *** talk about traveltime picking before Rayleigh wave tomography****
-% *** STANDBY *** 
+%\section*{Data Processing}
+%***overview of data processing workflow - 200-250 Eileen****
+%***Figure : stft plots at a few different spots***
+%***Mention whitening here***
+%***Mention earthqukes and quarry blasts here***
 
-% \subsection*{Tomography}
-% **** talk about how near-surface tomography is set up****
-% *** STANDBY *** 
+%\subsection*{Estimating Sensor Coupling Response}
+%***talk about different responses from different sensors and how to compensate for these, use many earthquakes for relative responses****
+%***100 Eileen***
+%***Figure : Boxed earthquake recording + response versus channel***
 
-\section*{Results}
-***overview of results****
-*** Convergence rates
-***150 Eileen *** 
-***Figure : line plot of correlation coeeficients vs epoch/time***
+%% \subsection*{Localizing Persistent Noise Sources}
+%% ***talk about localizing these things (motors, traffic, etc....) and show a little beamforming in small 1D parts of the array bandpassed to these persistent frequency peaks***
 
-% \subsection*{Convergence Rate Improvement Due to Pre-Processing}
-***show comparisons of cross-correlations with/without sensor coupling response, and with scaling by energy per channel of cross-correlations (also show spectrum per channel of these)****
+%% \subsection*{Removing Earthquakes and Quarry Blasts}
+%% ****talk about getting rid of big events lighting up whole array****
+
+%\subsection*{Removing Vehicle Noise}
+%****talk about clustering and comparing noise sources****
+%***500 Fantine \& Yinbin***
+%***Figures : Before/after car mute + clusters and projection on map***
+%***Little Eileen for sentence about why cars are a problem***
+
+%% \subsection*{Removing Correlated Noise Sources}
+%% *****talk about detecting temporally and spatially correlated noise sources, more generally than cars****
+
+%% \subsection*{Traveltime Picking}
+%% *** talk about traveltime picking before Rayleigh wave tomography****
+%% *** STANDBY *** 
+
+%% \subsection*{Tomography}
+%% **** talk about how near-surface tomography is set up****
+%% *** STANDBY *** 
+
+%\section*{Results}
+%***overview of results****
+%*** Convergence rates
+%***150 Eileen *** 
+%***Figure : line plot of correlation coeeficients vs epoch/time***
+
+%% \subsection*{Convergence Rate Improvement Due to Pre-Processing}
+%***show comparisons of cross-correlations with/without sensor coupling response, and with scaling by energy per channel of cross-correlations (also show spectrum per channel of these)****
+%\\
+%******show comparisons of convergence rates with/without vehicles removed, and with vehicles just removed via STA/LTA jumps****
+
+
+%% \subsection*{Tomography Along Array Lines}
+%% ***show tomography results along multiple lines on campus****
+%% *** STANDBY *** 
+
+%\section*{Summary}
+%****summary words****
+%***100 Eileen ***
+
+\section*{Biographies}
+\textbf{Eileen R. Martin} \texttt{ermartin@stanford.edu} is a Ph.D. student in Stanford's Institute for Computational and Mathematical Engineering, and an M.S. student in the geophysics department. She first started working with ambient noise and DAS data from permafrost thaw monitoring experiments done by Lawrence Berkeley National Lab and the US Army Corps of Engineers.
 \\
-******show comparisons of convergence rates with/without vehicles removed, and with vehicles just removed via STA/LTA jumps****
-
-
-% \subsection*{Tomography Along Array Lines}
-% ***show tomography results along multiple lines on campus****
-% *** STANDBY *** 
-
-\section*{Summary}
-****summary words****
-***100 Eileen ***
+\textbf{Fantine Huot} \texttt{**email address} *****
+\\
+\textbf{Yinbin Ma} \texttt{**email address} *****
+\\
+\textbf{Robert Cieplicki} \texttt{***email address} ****
+\\
+\textbf{Biondo L. Biondi} \texttt{**email address} ****
 
 \begin{thebibliography}{10}
 \bibitem{somebibitem} ***first bibitem***
