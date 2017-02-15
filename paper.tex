@@ -1,4 +1,4 @@
-\documentclass[11pt]{amsart}
+\documentclass[11pt]{article}
 \usepackage[margin=1in]{geometry}                % See geometry.pdf to learn the layout options. There are lots.
 \geometry{letterpaper}                   % ... or a4paper or a5paper or ... 
 %\geometry{landscape}                % Activate for for rotated page geometry
@@ -7,7 +7,7 @@
 \usepackage{amssymb}
 \usepackage{epstopdf}
 \DeclareGraphicsRule{.tif}{png}{.png}{`convert #1 `dirname #1`/`basename #1 .tif`.png}
-
+\usepackage{authblk}
 
 %For final version of Special issue article: For each paper in the special issue, up to 20 single column double-spaced pages, 11 point font size, including figures, tables and references. The total number of figures and tables may be up to 10 (sub-figures in (a), (b), (c), etc. counted separately). The total number of references may be up to 30. There should be at least 1.25" margin on left and right sides, and 1" margin from top and bottom. The figures and tables should be placed in the center of the column, and not tightly embedded into the text column. For some special issues, the page limit may be even less if more papers are included. In any event, check with the guest editors before writing the full manuscript.
 
@@ -15,7 +15,13 @@
 % more info: https://signalprocessingsociety.org/sites/default/files/uploads/special_issues_deadlines/SPM_SI_geo_sp.pdf
 
 \title{****title*****}
-\author{Eileen R. Martin, Fantine Huot, Yinbin Ma, Robert Cieplicki, Biondo L. Biondi}
+\author[1,2]{Eileen R. Martin}
+\author[2]{Fantine Huot}
+\author[1]{Yinbin Ma}
+\author[2]{Robert Cieplicki}
+\author[1,2]{Biondo L. Biondi}
+\affil[1]{Institute for Computational and Mathematical Engineering, Stanford University}
+\affil[2]{Department of Geophysics, Stanford University}
 %\date{}                                           % Activate to display a given date or no date
 
 \begin{document}
@@ -146,11 +152,71 @@
 \\
 \textbf{Robert Cieplicki} \texttt{***email address} ****
 \\
+\textbf{Steve Cole} \texttt{Steve.Cole@optasense.com} is Manager of Integrated Analysis at OptaSense. He has worked in the oil and gas industry for over 30 years at companies including Fugro, Chevron, and 4th Wave Imaging, which he co-founded. He has a Ph.D. in geophysics from Stanford.
+\\
 \textbf{Biondo L. Biondi} \texttt{**email address} ****
 
-\begin{thebibliography}{10}
-\bibitem{somebibitem} ***first bibitem***
+\begin{thebibliography}{30} % no more than 30 references
 
+% example of trenched ambient noise recording with distributed acoustic sensing
+\bibitem{AjoFranklin2015} J. Ajo-Franklin, N. Lindsey, S. Dou, T.M. Daley, B. Freifeld, E.R. Martin, M. Robertson, C. Ulrich and A. Wagner, "A Field Test of Distributed Acoustic Sensing for Ambient Noise Recording," \textit{SEG Technical Program Expanded Abstracts}, pp. 2620-2624, 2015.
+
+% working with DAS data, how DAS works basically
+\bibitem{Bakku2015} S.K. Bakku, "Fracture Characterization from Seismic Measurements in a Borehole," Ph.D. Thesis, Massachusetts Institute of Technology, 2015.
+
+% temporal and spectral and one bit normalization
+\bibitem{Bensen2007} G.D. Bensen, M.H. Ritzwoller, M.P. Barmin, A.L. Levshin, F. Lin, M.P. Moschetti, N.M. Shapiro and Y. Yang, "Processing seismic ambient noise data to obtain reliable broad-band surface wave dispersion measurements," \textit{Geophys. J. Int.}, vol. 169, no. ****, pp. 1239-1260, 2007.
+
+% whitenging for robustness to velocity changes
+\bibitem{Daskalakis2016} E. Daskalakis, C.P. Evangelidis, J. Garnier, N.S. Melis, G. Papanicolaou and C. Tsoga, "Robust seismic velocity change estimation using ambient noise recordings," \textit{Geophys. J. Int.}, vol. 205, no. 3, pp. 1926-1936, 2016.
+
+% ambient noise with mine blasts (similar to earthquakes)
+\bibitem{Girard2016} A.J. Girard and J. Shragge, "Extracting body waves from ambient seismic recordings," \textit{SEG Technical Program Expanded Abstracts}, pp. 2715-2719, 2016.
+
+% sensitivity of DAS cables with slippage, straight or helical
+\bibitem{Kuvshinov2015} B.N. Kuvshinov, "Interaction of helically wound fibre-optic cables with plane seismic waves," \textit{Geophysical Prospecting}, vol. ***, no. ***, pp. 1-18, 2015.
+
+% using horizontal components in interferometry as Rayleigh and Love wave components
+\bibitem{Lin2008} F. Lin, M.P. Moschetti and M.H. Ritzwoller, "Surface wave tomography of the western United States from ambient seismic noise: Rayleigh and Love wave phase velocity maps," \textit{Geophys. J. Int.} vol. 173, no. ***, pp. 281-298, 2008.
+
+% example of interferometry of ambient noise recorded by a trenched DAS array
+\bibitem{Martin2015} E.R. Martin, J. Ajo-Franklin, S. Dou, N. Lindsey, T.M. Daley, B. Freifeld, M. Robertson, A. Wagner, C. Ulrich, "Interferometry of ambient noise from a trenched distributed acoustic sensing array," \textit{SEG Technical Program Expanded Abstracts}, pp. 2445-2450, 2015.
+
+% example of roadside DAS interferometry
+\bibitem{Martin2016} E.R. Martin, N.J. Lindsey, S. Dou, J. Ajo-Franklin, T.M. Daley, B. Freifeld, M. Robertson, C. Ulrich, A. Wagner and K. Bjella, "Interferometry of a roadside DAS array in Fairbanks, AK," \textit{SEG Technical Program Expanded Abstracts}, pp. 2725-2629, 2016.
+
+
+% cross correlation, coherence and deconvolution, and using traffic noise
+\bibitem{Nakata2011} N. Nakata, R. Snieder, T. Tsuji, K. Larner and T. Matsuoka, "Shear wave imaging from traffic noise using seismic interferometry by cross-coherence," \textit{Geophysics}, vol. 76, no. 6, pp. SA97-SA106, 2011.
+
+% ambient noise on dense array in Long Beach
+\bibitem{Nakata2015} N. Nakata, J.P. Chang, J.F. Lawrence and P. Bou\'{e}, "Body wave extraction and tomography at Long Beach, California, with ambient-noise interferometry," \textit{J. Geophys. Res. Solid Earth}, vol. 120, pp. 1159-1173, 2015.
+
+% how DAS works
+\bibitem{Posey2000} R. Posey Jr., G.A. Johnson and S.T. Vohra, "Strain sensing based on coherence Rayleigh scattering in an optical fibre," \textit{Electronics Letters}, vol. 36, no. 20, pp. 1688-1689, 2000.
+
+% overlapping windows, method of measuring convergence with correlation coefficient
+\bibitem{Seats2012} K.J. Seats, J.F. Lawrence and G.A. Prieto, "Improved ambient noise correlation functions using Welch's method," \textit{Geophys. J. Int.}, vol. 188, no. ***, pp. 513-523, 2012.
+
+% fundamental paper in ambient noise
+\bibitem{Lobkis2001} O.I. Lobkis and R.L. Weaver, "On the emergence of the Green's function in the correlations of a diffuse field," \textit{J. Acoust. Soc. Am.}, vol. 110, no. 6, pp. 3011-3017, 2001.
+
+% DAS conversion to velocities, and VSP example and side-by-side multi-mode, single-mode and 3C geophones
+\bibitem{Miller2016} D.E. Miller, T.M. Daley, B.M. Freifeld, M. Robertson, J. Cocker and M. Craven, "Simultaneous Acquisition of Distributed Acoustic Sensing VSP with Multi-mode and Single-mode FIber-optic Cables and 3C-Geophones at the Aquistore CO$_2$ Storage Site," \textit{CSEG Recorder}, pp. 28-***, June 2016.
+
+% basics of interferometry
+\bibitem{Wapenaar2010A} K. Wapenaar, D. Draganov, R. Snieder, X. Campman and A. Verdel, "Tutorial on seismic interferometry: Part 1 - Basic principles and applications," \textit{Geophysics}, vol. 75, no. 5, pp. 75A195-75A209, 2010.
+% more basics of interferometry
+\bibitem{Wapenaar2010B} K. Wapenaar, E. Slob, R. Snieder and A. Curtis, "Tutorial on seismic interferometry: Part 2 - Underlying theory and new advances," \textit{Geophysics}, vol. 75, no. 5, pp. 75A211-75A227, 2010.
+
+% example of DAS for microseismic event detection
+\bibitem{Webster2013} P. Webster, J. Wall, C. Perkins and M. Molenaar, "Micro-Seismic Detection using Distributed Acoustic Sensing," \textit{SEG Technical Program Expanded Abstracts}, pp. 2459-2463, 2013.
+
+% another example of DAS interferometry, this one side-by-side with geophones
+\bibitem{Zeng2017} X. Zeng, C. Thurber, H. Wang, D. Fratta, E. Matzel, PoroTomo Team, "High-resolution Shallow Structure Revealed with Ambient Noise Tomography on a Dense Array," \textit{Proceedings, 42nd Workshop on Geothermal Reservoir Engineering}, Stanford University, Stanford, CA, Feb. 13-15, 2017, SGP-TR-212.
+
+% velocity artifacts from ambient noise source changes
+\bibitem{Zhan2013} Z. Zhan, V.C. Tsai and R.W. Clayton, "Spurious velocity changes caused by temporal variations in ambient noise frequency content," \textit{Geophys. J. Int}, vol. 194, no. ***, pp. 1574-1581, 2013.
 
 \end{thebibliography}
 
