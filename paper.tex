@@ -8,56 +8,108 @@
 \usepackage{epstopdf}
 \DeclareGraphicsRule{.tif}{png}{.png}{`convert #1 `dirname #1`/`basename #1 .tif`.png}
 \usepackage{authblk}
+\usepackage{titlesec}
 
 %For final version of Special issue article: For each paper in the special issue, up to 20 single column double-spaced pages, 11 point font size, including figures, tables and references. The total number of figures and tables may be up to 10 (sub-figures in (a), (b), (c), etc. counted separately). The total number of references may be up to 30. There should be at least 1.25" margin on left and right sides, and 1" margin from top and bottom. The figures and tables should be placed in the center of the column, and not tightly embedded into the text column. For some special issues, the page limit may be even less if more papers are included. In any event, check with the guest editors before writing the full manuscript.
 
 % White paper due Feb 20, up to 4 pages length
 % more info: https://signalprocessingsociety.org/sites/default/files/uploads/special_issues_deadlines/SPM_SI_geo_sp.pdf
 
-\title{****title*****}
-\author[1,2]{Eileen R. Martin}
+% KEYWORDS from IEEE Taxonomy 2017:
+% Sensors: Acoustic Sensors
+% Sensors: Optical fiber sensors
+% Signal processing: Acoustic signal processing
+% Signal processing: Array signal processing
+% Signal processing: Geophysical signal processing
+% Signal processing: Multidimensional signal processing
+% Science-general: Waves, Seismic waves
+% Science-general: Geophysics, Surface waves
+
+\title{\vspace{-1.8cm} \Large Demystifying Ambient Seismic Noise Processing: \\Automating source analysis and processing decisions in the presence of coherent anthropogenic, natural, and sensor noise \vspace{-0.4cm}}
+\author[1,2]{\small Eileen R. Martin}
 \author[2]{Fantine Huot}
 \author[1]{Yinbin Ma}
 \author[2]{Robert Cieplicki}
-\author[1,2]{Biondo L. Biondi}
-\affil[1]{Institute for Computational and Mathematical Engineering, Stanford University}
-\affil[2]{Department of Geophysics, Stanford University}
-%\date{}                                           % Activate to display a given date or no date
+\author[3]{Steve Cole}
+\author[3]{Martin Karrenbach}
+\author[1,2]{Biondo L. Biondi \vspace{-0.3cm}}
+\affil[1]{Institute for Computational and Mathematical Engineering, Stanford University, Stanford, CA}
+\affil[2]{Department of Geophysics, Stanford University, Stanford, CA}
+\affil[3]{OptaSense, Brea, CA}
+\date{}                                
 
 \begin{document}
 \maketitle
 
-\section*{Motivation}  *****2/3 page Eileen****
+\vspace{-1.8cm}
+\subsection*{Motivation} 
+\vspace{-0.2cm}
+****motivation for near surface seismic imaging****
+\\
+\\
+****motivation for using DAS****history \& current issues in DAS****
+Distributed acoustic sensing (DAS) probes a fiber optic cable with a laser interrogator unit (IU) to repurpose that fiber as a series of strain or strain rate sensors. It does this by performing optical interferometry on Rayleigh backscattered photons, associating the resulting phase shift with a subset of cable based on the two-way travel time of those photons, then applying a linear transformation to the change in phase shift associated with that subset of cable \cite{Posey2000}, \cite{Daley2013}, \cite{Bakku2015}. That cable can be either single- or multi-mode \cite{Miller2016}. For cost reasons, most experiments use straight fibers, but these fibers measure strain along the axis of the fiber, so some experimenters are now wrapping the fiber inside the cable to make its angular sensitivity more ideal for a variety of source-receiver geometries \cite{Kuvshinov2016}.
+\\
+\\
+***motivation for using ambient noise****current issues in ambient noise*****
+\\
+\\
+There have now been several ambient noise experiments where fiber optics were buried in shallow trenches so the fiber was directly coupled to the ground \cite{AjoFranklin2015}, \cite{Martin2015}, \cite{Martin2016}, \cite{Zeng2017}. This type of installation allows ****
+By running fibers in existing telecommunications conduits, or even plugging into existing dark fiber, on-demand repeatable seismic studies in urban areas requiring little manual labor are becoming a reality. When the interrogator unit is probing a section of fiber, the data can serve many purposes: near surface imaging with ambient noise, earthquake detection and location (and local site response) \cite{Martin2017}, tracking vehicle traffic, potentially even detecting underground tunneling, studying the status of fluid pump systems nearby, or detecting intrusion into manholes. 
 
-\section*{Significance} ******2/3 page Eileen****
+\vspace{-0.3cm}
+\subsection*{Significance} 
+\vspace{-0.2cm}
+This manuscript will walk through the basics (and some new tools) for processing ambient noise to do near-surface seismic imaging. Its purposes:
+\vspace{-0.2cm}
+\begin{itemize}
+\item overview of ambient noise processing for statisticians or mathematicians to encourage them to develop data analysis tools or theory for working with ambient noise in the presence of non-ideal noises
+\vspace{-0.2cm}
+\item show optical engineers an application where an optical measurement device's noise level and sensitivity should be improved
+\vspace{-0.2cm}
+\item expose gepohysicists to an emerging acquisition method and a few machine learning tools and metrics to quantify processing decisions, a task that will become increasingly more difficult as data acquisition continues to become easier and cheaper
+\end{itemize}
+\vspace{-0.2cm}
+It is difficult to gain intuition about amibent noise processing without looking at real data, so we will present this tutorial in the context of a case study: a figure-eight-shaped array of 2.4 km of fiber optics loosely laying in existing telecommunications conduits undernear the Stanford University campus. This particular case study is an ideal sandbox for a tutorial that demonstrates the wide variety of issues on the near horizon as we push for broader application of ambient noise studies. 
+\\
+\\
+We will discuss the noise level and sensitivities particular to recording with DAS, and a novel deployment that can greatly reduce costs (increasing data volumes): fiber loosely laying in existing telecommunications conduits. The array detects a wide variety of seismic noise sources that do not conform to the ideals of existing ambient noise theory: it sits in a seismically active region, 20 km from the Pacific ocean, 7 km from the San Francisco bay, with major highways on either side, a variety of roads with differing levels of traffic near the fiber, regular quarry blasts within 15 km, plumbing and HVAC systems throughout the site, multiple construction sites near the array, and foot and bicycle traffic throughout. With over 600 sensors continuously recording 50 samples per second since September 2016, manual inspection of most data is infeasible, making the automation tools shown in this paper critical to extracting subsurface information from these data.
 
-\section*{Outline of the paper}
+\vspace{-0.3cm}
+\subsection*{Outline of the paper}
 	\begin{enumerate}
+	\vspace{-0.2cm}
 	\item Abstract/summary
-	\item Introduction 
-		\begin{itemize}
-		\item *****words about intro, motivation****
-		\end{itemize}
+	\vspace{-0.2cm}
+	\item Introduction: why we care about near surface imaging, discuss tradeoffs of sensor quality with cost and array density (DAS or MEMS, etc...), introduce idea of ambient noise to get rid of sources, ***
+	\vspace{-0.2cm}
 	\item Related work
 		\begin{enumerate}
+		\vspace{-0.2cm}
 		\item Background on ambient noise: how it works that for the cost of just laying down receivers, you can extract signals mimicking those of an active seismic survey with a source at any receiver ****add citations******
+		\vspace{-0.2cm}
 		\item Background on Distributed Acoustic Sensing: how it works ****add citations****, how it has been used so far ****add citations****
+		\vspace{-0.2cm}
 		\item Examples of ambient seismic noise studies using Distributed Acoustic Sensing *****add citations****
 		\end{enumerate}
+	\vspace{-0.2cm}
 	\item Data Processing: we process the noise we record so that it mimicks data that would be recorded if the noise field followed theoretical ideals. Some common strategies include ****citations to review like papers*****
 		\begin{enumerate}
-		\item Clustering of data to speed up noise field exploration
-		\item How to use earthquakes to estimate sensor coupling 
-		\item Detection of localized, persistent noise sources 
-		\item Removing vehicle noise: design of filter for cars, for each piece of noise find nearest cluster to see if it's a car, then filter out the car while preserving the use of other noise in the same time and place
+		\vspace{-0.2cm}
+		\item Clustering/separation of data (k-means, hierarchical agglomerative, support vector machine separation) to speed up noise field exploration, identification of potential issues
+		\vspace{-0.2cm}
+		\item How to use earthquakes to estimate sensor coupling heterogeneity when array installation is relatively uncontrolled (specifically, a fiber loosely laying in a variety of conduits) 
+		\vspace{-0.2cm}
+		\item Automatically detect \& filter persistent noise sources from short-time Fourier transforms
+		\vspace{-0.2cm}
+		\item Automating the design of f-k domain filters for particular clusters based on separation from other clusters or background level noise. In particular, a demonstration of removing vehicle noise: time domain mute vs. manually designed f-k vs. automated design. 
 		\end{enumerate}
-	\item Results
-		\begin{enumerate}
-		\item Comparison of convergence rates of virtual source response function estimates ****cite Seats 2012**** (both cross-correlation and cross-coherence) for traditional processing and new processing methods
-		\item Velocity model resulting from ambient noise tomography
-		\end{enumerate}
-	\item Conclusions
-	\item Acknowledgments
+	\vspace{-0.2cm}
+	\item Measuring improvements: measure convergence rates of virtual source response function estimates like \cite{Seats2012}, but  (both cross-correlation and cross-coherence) for traditional processing and new processing methods
+	\vspace{-0.2cm}
+	\item Show a few dispersion images and a velocity model resulting from surface wave tomography, a couple of the possible uses of the virtual source response estimates
+	\vspace{-0.2cm}
+	\item Conclusions and future directions
 	\end{enumerate}
 
 
@@ -142,82 +194,111 @@
 %\section*{Summary}
 %****summary words****
 %***100 Eileen ***
-
-\section*{Biographies}
-\textbf{Eileen R. Martin} \texttt{ermartin@stanford.edu} is a Ph.D. student in Stanford's Institute for Computational and Mathematical Engineering, and an M.S. student in the geophysics department. She first started working with ambient noise and DAS data from permafrost thaw monitoring experiments done by Lawrence Berkeley National Lab and the US Army Corps of Engineers.
+\vspace{-0.3cm}
+\subsection*{Biographies}
+\vspace{-0.2cm}
+\textbf{Eileen R. Martin} (\texttt{ermartin@stanford.edu}) is a Ph.D. student in Stanford's Institute for Computational and Mathematical Engineering, and an M.S. student in the Geophysics Department. She first started working with ambient noise and DAS data from permafrost thaw monitoring experiments done by Lawrence Berkeley National Lab and the US Army Corps of Engineers.
 \\
-\textbf{Fantine Huot} \texttt{**email address} *****
+\textbf{Fantine Huot} \texttt{fantine@sep.stanford.edu} received her M.S. in Science and Engineering from the Ecole Normale Sup\'erieure des Mines de Paris in 2013. Following graduation, she worked as a software developer in France. In fall 2015, she started her Ph.D. in Geophysics at Stanford University and joined the Stanford Exploration Project. She works on addressing earth science problems by leveraging machine learning algorithms.
 \\
 \textbf{Yinbin Ma} \texttt{**email address} *****
 \\
-\textbf{Robert Cieplicki} \texttt{***email address} ****
+\textbf{Robert Cieplicki} (\texttt{robcie@stanford.edu}) is a PhD student in the Zoback Stress and Crustal Mechanics Research Group (Geophysics Department, Stanford University). He applies machine learning to horizontal wells drilled in shale hydrocarbon reservoirs to predict the efficiency of hydraulic fracturing.
 \\
-\textbf{Steve Cole} \texttt{Steve.Cole@optasense.com} is Manager of Integrated Analysis at OptaSense. He has worked in the oil and gas industry for over 30 years at companies including Fugro, Chevron, and 4th Wave Imaging, which he co-founded. He has a Ph.D. in geophysics from Stanford.
+\textbf{Steve Cole} (\texttt{Steve.Cole@optasense.com}) is Manager of Integrated Analysis at OptaSense. He has worked in the oil and gas industry for over 30 years at companies including Fugro, Chevron, and 4th Wave Imaging, which he co-founded. He has a Ph.D. in geophysics from Stanford.
+\\
+\textbf{Martin Karrenbach} (\texttt{***email address}) *******
 \\
 \textbf{Biondo L. Biondi} \texttt{**email address} ****
 
+\vspace{-0.3cm}
+\begingroup
+\titleformat*{\section}{\large \bf}
 \begin{thebibliography}{30} % no more than 30 references
-
+\vspace{-0.2cm}
+\small
 % example of trenched ambient noise recording with distributed acoustic sensing
 \bibitem{AjoFranklin2015} J. Ajo-Franklin, N. Lindsey, S. Dou, T.M. Daley, B. Freifeld, E.R. Martin, M. Robertson, C. Ulrich and A. Wagner, "A Field Test of Distributed Acoustic Sensing for Ambient Noise Recording," \textit{SEG Technical Program Expanded Abstracts}, pp. 2620-2624, 2015.
-
+\vspace{-0.2cm}
 % working with DAS data, how DAS works basically
 \bibitem{Bakku2015} S.K. Bakku, "Fracture Characterization from Seismic Measurements in a Borehole," Ph.D. Thesis, Massachusetts Institute of Technology, 2015.
-
+\vspace{-0.2cm}
 % temporal and spectral and one bit normalization
 \bibitem{Bensen2007} G.D. Bensen, M.H. Ritzwoller, M.P. Barmin, A.L. Levshin, F. Lin, M.P. Moschetti, N.M. Shapiro and Y. Yang, "Processing seismic ambient noise data to obtain reliable broad-band surface wave dispersion measurements," \textit{Geophys. J. Int.}, vol. 169, no. ****, pp. 1239-1260, 2007.
-
+\vspace{-0.2cm}
+% overview of the array, reasons to use DAS in existing telecomm conduits
+\bibitem{Martin2017} E.R. Martin, B.L. Biondi, M. Karrenbach, S. Cole, "Continuous Subsurface Monitoring by Passice Seismic with Distributed Acoustic Sensors- The "Stanford Array" Experiment," \textit{Proceedings of the First EAGE Workshop on Practical Reservoir Monitoring}, 2017.
+\vspace{-0.2cm}
 % whitenging for robustness to velocity changes
 \bibitem{Daskalakis2016} E. Daskalakis, C.P. Evangelidis, J. Garnier, N.S. Melis, G. Papanicolaou and C. Tsoga, "Robust seismic velocity change estimation using ambient noise recordings," \textit{Geophys. J. Int.}, vol. 205, no. 3, pp. 1926-1936, 2016.
-
+\vspace{-0.2cm}
+% nice intro to DAS with a seismic active experiment
+\bibitem{Daley2013} T.M. Daley, B.M. Freifeld, J. Ajo-Franklin and S. Dou, "Field testing of fiber-optic distributed acoustic sensing (DAS) for subsurface seismic monitoring," \textit{The Leading Edge}, pp. 936-942, June 2013.
+\vspace{-0.2cm}
+% an overview comparison of MEMS accelerometers
+\bibitem{Evans2014} J.R. Evans, R.M. Allen, A.I. Chung, E.S. Cochran, R. Guy, M. Hellweg and J.F. Lawrence, "Performance of Several Low-Cost Accelerometers," \textit{Seismol. Res. Lett.}, vol. 85, no. 1, pp. 148-158, 2014.
+\vspace{-0.2cm}
+% another example of passive seismic data being analyzed with machine learning techniques (including CWT as important feature)
+\bibitem{Fisher2016} W.D. Fisher, T.K. Camp and V.V. Krzhizhanovskaya, "Anomaly detection in earth dam and levee passive seismic data using support vector machines and automatic feature selection," \textit{J. Comput. Sci.}, in press, doi: 10.1016/j.jocs.2016.11.016, 2016.
+\vspace{-0.2cm}
 % ambient noise with mine blasts (similar to earthquakes)
 \bibitem{Girard2016} A.J. Girard and J. Shragge, "Extracting body waves from ambient seismic recordings," \textit{SEG Technical Program Expanded Abstracts}, pp. 2715-2719, 2016.
-
+\vspace{-0.2cm}
+% lots of basic data analysis tools
+\bibitem{Hastie2009} T. Hastie, R. Tibshirani and J. Friedman, \textit{The Elements of Statistical Learning: Data Mining, Inference, and Prediction}, 2nd ed. New York, NY, USA: Springer, 2009.
+\vspace{-0.2cm}
 % sensitivity of DAS cables with slippage, straight or helical
-\bibitem{Kuvshinov2015} B.N. Kuvshinov, "Interaction of helically wound fibre-optic cables with plane seismic waves," \textit{Geophysical Prospecting}, vol. ***, no. ***, pp. 1-18, 2015.
-
+\bibitem{Kuvshinov2016} B.N. Kuvshinov, "Interaction of helically wound fibre-optic cables with plane seismic waves," \textit{Geophysical Prospecting}, vol. 64, no. 3, pp. 671-688, 2016.
+\vspace{-0.2cm}
+% review on clustering of time series data
+\bibitem{Liao2005} T.W. Liao, "Clustering of time series data- a survey," \textit{Pattern Recognition}, vol. 38, no. 11, pp. 1857-1874, 2005.
+\vspace{-0.2cm}
 % using horizontal components in interferometry as Rayleigh and Love wave components
-\bibitem{Lin2008} F. Lin, M.P. Moschetti and M.H. Ritzwoller, "Surface wave tomography of the western United States from ambient seismic noise: Rayleigh and Love wave phase velocity maps," \textit{Geophys. J. Int.} vol. 173, no. ***, pp. 281-298, 2008.
-
-% example of interferometry of ambient noise recorded by a trenched DAS array
-\bibitem{Martin2015} E.R. Martin, J. Ajo-Franklin, S. Dou, N. Lindsey, T.M. Daley, B. Freifeld, M. Robertson, A. Wagner, C. Ulrich, "Interferometry of ambient noise from a trenched distributed acoustic sensing array," \textit{SEG Technical Program Expanded Abstracts}, pp. 2445-2450, 2015.
-
-% example of roadside DAS interferometry
-\bibitem{Martin2016} E.R. Martin, N.J. Lindsey, S. Dou, J. Ajo-Franklin, T.M. Daley, B. Freifeld, M. Robertson, C. Ulrich, A. Wagner and K. Bjella, "Interferometry of a roadside DAS array in Fairbanks, AK," \textit{SEG Technical Program Expanded Abstracts}, pp. 2725-2629, 2016.
-
-
-% cross correlation, coherence and deconvolution, and using traffic noise
-\bibitem{Nakata2011} N. Nakata, R. Snieder, T. Tsuji, K. Larner and T. Matsuoka, "Shear wave imaging from traffic noise using seismic interferometry by cross-coherence," \textit{Geophysics}, vol. 76, no. 6, pp. SA97-SA106, 2011.
-
-% ambient noise on dense array in Long Beach
-\bibitem{Nakata2015} N. Nakata, J.P. Chang, J.F. Lawrence and P. Bou\'{e}, "Body wave extraction and tomography at Long Beach, California, with ambient-noise interferometry," \textit{J. Geophys. Res. Solid Earth}, vol. 120, pp. 1159-1173, 2015.
-
-% how DAS works
-\bibitem{Posey2000} R. Posey Jr., G.A. Johnson and S.T. Vohra, "Strain sensing based on coherence Rayleigh scattering in an optical fibre," \textit{Electronics Letters}, vol. 36, no. 20, pp. 1688-1689, 2000.
-
-% overlapping windows, method of measuring convergence with correlation coefficient
-\bibitem{Seats2012} K.J. Seats, J.F. Lawrence and G.A. Prieto, "Improved ambient noise correlation functions using Welch's method," \textit{Geophys. J. Int.}, vol. 188, no. ***, pp. 513-523, 2012.
-
+\bibitem{Lin2008} F. Lin, M.P. Moschetti and M.H. Ritzwoller, "Surface wave tomography of the western United States from ambient seismic noise: Rayleigh and Love wave phase velocity maps," \textit{Geophys. J. Int.}, vol. 173, no. ***, pp. 281-298, 2008.
+\vspace{-0.2cm}
 % fundamental paper in ambient noise
 \bibitem{Lobkis2001} O.I. Lobkis and R.L. Weaver, "On the emergence of the Green's function in the correlations of a diffuse field," \textit{J. Acoust. Soc. Am.}, vol. 110, no. 6, pp. 3011-3017, 2001.
-
+\vspace{-0.2cm}
+% wavelet transforms and basic signal processing reference
+\bibitem{Mallat2008} S. Mallat, \textit{A Wavelet Tour of Signal Processing, Third Edition: The Sparse Way}. Burlington, MA, USA: Academic Press, 2008.
+\vspace{-0.2cm}
+% example of interferometry of ambient noise recorded by a trenched DAS array
+\bibitem{Martin2015} E.R. Martin, J. Ajo-Franklin, S. Dou, N. Lindsey, T.M. Daley, B. Freifeld, M. Robertson, A. Wagner, C. Ulrich, "Interferometry of ambient noise from a trenched distributed acoustic sensing array," \textit{SEG Technical Program Expanded Abstracts}, pp. 2445-2450, 2015.
+\vspace{-0.2cm}
+% example of roadside DAS interferometry
+\bibitem{Martin2016} E.R. Martin, N.J. Lindsey, S. Dou, J. Ajo-Franklin, T.M. Daley, B. Freifeld, M. Robertson, C. Ulrich, A. Wagner and K. Bjella, "Interferometry of a roadside DAS array in Fairbanks, AK," \textit{SEG Technical Program Expanded Abstracts}, pp. 2725-2629, 2016.
+\vspace{-0.2cm}
 % DAS conversion to velocities, and VSP example and side-by-side multi-mode, single-mode and 3C geophones
 \bibitem{Miller2016} D.E. Miller, T.M. Daley, B.M. Freifeld, M. Robertson, J. Cocker and M. Craven, "Simultaneous Acquisition of Distributed Acoustic Sensing VSP with Multi-mode and Single-mode FIber-optic Cables and 3C-Geophones at the Aquistore CO$_2$ Storage Site," \textit{CSEG Recorder}, pp. 28-***, June 2016.
-
+\vspace{-0.2cm}
+% cross correlation, coherence and deconvolution, and using traffic noise
+\bibitem{Nakata2011} N. Nakata, R. Snieder, T. Tsuji, K. Larner and T. Matsuoka, "Shear wave imaging from traffic noise using seismic interferometry by cross-coherence," \textit{Geophysics}, vol. 76, no. 6, pp. SA97-SA106, 2011.
+\vspace{-0.2cm}
+% ambient noise on dense array in Long Beach
+\bibitem{Nakata2015} N. Nakata, J.P. Chang, J.F. Lawrence and P. Bou\'{e}, "Body wave extraction and tomography at Long Beach, California, with ambient-noise interferometry," \textit{J. Geophys. Res. Solid Earth}, vol. 120, pp. 1159-1173, 2015.
+\vspace{-0.2cm}
+% how DAS works
+\bibitem{Posey2000} R. Posey Jr., G.A. Johnson and S.T. Vohra, "Strain sensing based on coherence Rayleigh scattering in an optical fibre," \textit{Electronics Letters}, vol. 36, no. 20, pp. 1688-1689, 2000.
+\vspace{-0.2cm}
+% overlapping windows, method of measuring convergence with correlation coefficient
+\bibitem{Seats2012} K.J. Seats, J.F. Lawrence and G.A. Prieto, "Improved ambient noise correlation functions using Welch's method," \textit{Geophys. J. Int.}, vol. 188, no. ***, pp. 513-523, 2012.
+\vspace{-0.2cm}
 % basics of interferometry
-\bibitem{Wapenaar2010A} K. Wapenaar, D. Draganov, R. Snieder, X. Campman and A. Verdel, "Tutorial on seismic interferometry: Part 1 - Basic principles and applications," \textit{Geophysics}, vol. 75, no. 5, pp. 75A195-75A209, 2010.
+\bibitem{Wapenaar2010A} K. Wapenaar, D. Draganov, R. Snieder, X. Campman and A. Verdel, "Tutorial on seismic interferometry: Part 1- Basic principles and applications," \textit{Geophysics}, vol. 75, no. 5, pp. 75A195-75A209, 2010.
+\vspace{-0.6cm}
 % more basics of interferometry
 \bibitem{Wapenaar2010B} K. Wapenaar, E. Slob, R. Snieder and A. Curtis, "Tutorial on seismic interferometry: Part 2 - Underlying theory and new advances," \textit{Geophysics}, vol. 75, no. 5, pp. 75A211-75A227, 2010.
-
+\vspace{-0.2cm}
 % example of DAS for microseismic event detection
 \bibitem{Webster2013} P. Webster, J. Wall, C. Perkins and M. Molenaar, "Micro-Seismic Detection using Distributed Acoustic Sensing," \textit{SEG Technical Program Expanded Abstracts}, pp. 2459-2463, 2013.
-
+\vspace{-0.2cm}
 % another example of DAS interferometry, this one side-by-side with geophones
-\bibitem{Zeng2017} X. Zeng, C. Thurber, H. Wang, D. Fratta, E. Matzel, PoroTomo Team, "High-resolution Shallow Structure Revealed with Ambient Noise Tomography on a Dense Array," \textit{Proceedings, 42nd Workshop on Geothermal Reservoir Engineering}, Stanford University, Stanford, CA, Feb. 13-15, 2017, SGP-TR-212.
-
+\bibitem{Zeng2017} X. Zeng, C. Thurber, H. Wang, D. Fratta, E. Matzel, PoroTomo Team, "High-resolution Shallow Structure Revealed with Ambient Noise Tomography on a Dense Array," \textit{Proceedings, 42nd Workshop on Geothermal Reservoir Engineering}, Stanford University, CA, Feb. 13-15, 2017, SGP-TR-212.
+\vspace{-0.2cm}
 % velocity artifacts from ambient noise source changes
 \bibitem{Zhan2013} Z. Zhan, V.C. Tsai and R.W. Clayton, "Spurious velocity changes caused by temporal variations in ambient noise frequency content," \textit{Geophys. J. Int}, vol. 194, no. ***, pp. 1574-1581, 2013.
 
 \end{thebibliography}
+\endgroup
 
 \end{document}  
