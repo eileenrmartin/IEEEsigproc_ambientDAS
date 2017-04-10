@@ -25,14 +25,14 @@
 % Science-general: Waves, Seismic waves
 % Science-general: Geophysics, Surface waves
 
-\title{\vspace{-1.8cm} \Large Demystifying Ambient Seismic Noise Processing: \\Automating source analysis and processing decisions in the presence of coherent anthropogenic, natural, and sensor noise \vspace{-0.5cm}}
+\title{\vspace{-1.8cm} \Large Demystifying Ambient Seismic Noise Analysis: \\Automating processing decisions in the presence of coherent noise \vspace{-0.5cm}}
 \author[1,2]{\small Eileen R. Martin}
 \author[2]{Fantine Huot}
 \author[1]{Yinbin Ma}
 \author[2]{Robert Cieplicki}
 \author[3]{Steve Cole}
 \author[3]{Martin Karrenbach}
-\author[1,2]{Biondo L. Biondi \vspace{-0.4cm}}
+\author[2,1]{Biondo L. Biondi \vspace{-0.4cm}}
 \affil[1]{Institute for Computational and Mathematical Engineering, Stanford University, Stanford, CA}
 \affil[2]{Department of Geophysics, Stanford University, Stanford, CA}
 \affil[3]{OptaSense, Brea, CA}
@@ -44,24 +44,24 @@
 \vspace{-1.8cm}
 \subsection*{Motivation} 
 \vspace{-0.2cm}
-By measuring the speed of seismic waves propagating in the Earth's near surface, we can image the top tens to hundreds of meters of the subsurface, with deeper features being resolved by lower frequencies. These seismic velocity images can be interpreted to evaluate earthquake or landslide risk, to detect permafrost, to find sinkholes or tunnels, or to track near surface changes related to drilling activities. Additionally, in cases of complex near-surface conditions, accurate near-surface images can be used to improve deeper seismic images.
+By measuring the speed of seismic waves propagating in the Earth's near-surface, we can image the top tens to hundreds of meters of the subsurface, with deeper features being resolved by lower frequencies. These seismic velocity images can be interpreted to evaluate earthquake or landslide risk, to detect permafrost, to find sinkholes or tunnels, or to track near surface changes related to drilling activities. Additionally, in cases of complex near-surface conditions, resolving this complexity is a prerequisite to obtaining a high-quality image of the deeper subsurface.
 \par
-By cross-correlating noise recorded at any two receivers in an array, we can extract signals mimicking an active seismic survey with a source at any receiver, called virtual source response functions \cite{Lobkis2001}, \cite{Lin2008}, \cite{Wapenaar2010A}, \cite{Wapenaar2010B}. Thus, when active sources are too costly or logistically prohibitive, passive seismic can be a good option for near surface imaging. However, the theory is limited by the assumption of homogeneous uncorrelated sources \cite{Wapenaar2010A}. Non-ideal sources can cause artifacts in extracted velocities, but with careful processing experts can overcome these limitations \cite{Bensen2007}, \cite{Daskalakis2016}, \cite{Zhan2013}, even for anthropogenic sources occurring at higher frequencies \cite{Girard2016}, \cite{Martin2015}, \cite{Martin2016}, \cite{Nakata2011}, \cite{Nakata2015}, \cite{Zeng2017}. Acquisition is a further issue: nearly all of the past ambient noise studies on dense arrays have been temporary arrays which were labor-intensive to install and maintain \cite{Lin2008}, \cite{Nakata2011}, \cite{Nakata2015}, \cite{Zeng2017}. 
+By cross-correlating noise recorded at a selected receiver with noise recorded by all other receivers in an array, we can extract signals mimicking an active seismic survey with a source at the selected receiver, called its virtual source response function \cite{Lobkis2001}, \cite{Lin2008}, \cite{Wapenaar2010A}, \cite{Wapenaar2010B}. Thus, when active sources are too costly or logistically prohibitive, passive seismic can be a good option for near-surface imaging. However, the theory is limited by the assumption of homogeneous uncorrelated sources \cite{Wapenaar2010A}. Non-ideal sources can cause artifacts in extracted velocities, but with careful processing experts can overcome these limitations \cite{Bensen2007}, \cite{Daskalakis2016}, \cite{Zhan2013}, even for anthropogenic sources occurring at higher frequencies \cite{Girard2016}, \cite{Martin2015}, \cite{Martin2016}, \cite{Nakata2011}, \cite{Nakata2015}, \cite{Zeng2017}. Acquisition is a further issue: nearly all of the past ambient noise studies on dense arrays have been temporary arrays which were labor-intensive to install and maintain \cite{Lin2008}, \cite{Nakata2011}, \cite{Nakata2015}, \cite{Zeng2017}. 
 \par
-Distributed acoustic sensing (DAS) probes a fiber optic cable with a laser interrogator unit (IU) to repurpose that fiber as a series of strain or strain rate sensors. For cost reasons, most experiments use straight fibers, but these fibers measure strain along the axis of the fiber, so some experimenters are now wrapping the fiber in a helix \cite{Kuvshinov2016}. DAS is being increasingly adopted in the energy industry for microseismic monitoring \cite{Webster2013} and time-lapse seismic surveys \cite{Daley2013}, \cite{Mateeva2014}, \cite{Bakku2015}, \cite{Miller2016} because it allows for a dense series of seismic sensors to communicate over long distances while they are run by a single power source, and those sensors can be permanently left in the same location.
+Distributed acoustic sensing (DAS) is a new acquisition technology being increasingly adopted in the energy industry for microseismic monitoring \cite{Webster2013} and time-lapse seismic surveys \cite{Daley2013}, \cite{Mateeva2014}, \cite{Bakku2015}, \cite{Miller2016}. DAS probes a fiber optic cable with a laser interrogator unit (IU) to repurpose that fiber as a series of strain sensors. Most experiments use low-cost straight fibers, but these fibers only measure strain along the axis of the fiber \cite{Kuvshinov2016}. This downside is often outweighed by the benefit of a dense series of permanently installed seismic sensors communicating over long distances and running on a single power source.
 \par
-The maintenance cost of permanent node arrays motivated the use of buried DAS, and there have now been several ambient noise experiments where fiber optics were buried in shallow trenches so the fiber was directly coupled to the ground \cite{AjoFranklin2015}, \cite{Martin2015}, \cite{Martin2016}, \cite{Zeng2017}. In fact, we can sacrifice some ground-to-sensor coupling in favor of easier installation by running fibers in existing telecommunications conduits \cite{Martin2017}. By running fibers in existing conduits, or even plugging into existing dark fiber, on-demand repeatable seismic studies in urban areas requiring little manual labor will soon be a reality. When the interrogator unit probes a fiber, the data can serve many purposes: near surface imaging with ambient noise, earthquake detection and location (and local site response) \cite{Martin2017}, tracking vehicle traffic, potentially even detecting underground tunneling, studying the status of fluid pump systems nearby, or detecting intrusion into manholes. 
+Motivated by avoiding the maintenance cost of node arrays, there have been several recent ambient noise experiments using fiber optics buried in shallow trenches directly coupled to the ground \cite{AjoFranklin2015}, \cite{Martin2015}, \cite{Martin2016}, \cite{Zeng2017}. In fact, we can sacrifice some ground-to-sensor coupling in favor of easier installation by running fibers in existing telecommunications conduits \cite{Martin2017}. By running fibers in existing conduits, or even plugging into unused fibers in existing telecommunications bundles, easy, on-demand, repeatable seismic studies (even in urban areas) will soon be a reality. When the IU probes a fiber, the data can serve many purposes: near-surface imaging with ambient noise, earthquake detection \cite{Martin2017} and location, studying local site response to earthquakes, tracking vehicle traffic, potentially even detecting underground tunneling, studying the status of fluid pump systems nearby, or detecting intrusion into manholes. 
 \par
-With ambient noise data becoming increasingly easy to record, we can only extract its full value if we further automate the processing workflow.
+With ambient noise data becoming increasingly easy to record, data volumes are increasing, and we can only extract their full value if we further automate the processing workflow.
 
 \vspace{-0.5cm}
 \subsection*{Significance} 
 \vspace{-0.2cm}
-This manuscript will walk through the basics and some new tools for processing ambient noise for near-surface seismic imaging. Its purposes: (1) overview of ambient noise processing for statisticians or mathematicians to encourage them to develop data analysis tools or theory for working with non-ideal ambient noise, (2) show optical engineers an application where an optical measurement device's noise level and sensitivity should be improved, and (3) expose gepohysicists to an emerging acquisition method and a few machine learning tools and metrics to quantify processing decisions, a task that will become increasingly more difficult as data acquisition becomes easier and cheaper.
+This manuscript will walk through the basics of processing ambient noise for near-surface imaging, and introduce some tools that are new to this application area, but already used for other spatial and temporal data. Its purposes: (1) overview of ambient noise processing for statisticians or mathematicians to encourage them to develop data analysis tools or theory for working with non-ideal ambient noise, (2) show optical engineers an application where an optical measurement device's noise level and sensitivity should be improved, and (3) expose geophysicists to an emerging acquisition method and a few machine learning tools and metrics to quantify processing decisions, a task that will become increasingly more difficult as data acquisition becomes easier and cheaper.
 \par 
-It is hard to build intuition about amibent noise processing without looking at real data, so we will present this tutorial in the context of a case study: a figure-eight-shaped array of 2.4 km of fiber optics lying loosely in existing telecommunications conduits underneath the Stanford University campus. This particular experiment is ideal because it demonstrates the wide variety of issues on the near horizon as we push for broader use of ambient noise. 
+It is difficult to build intuition about ambient noise processing without looking at real data, so we will present this tutorial in the context of a case study: a figure-eight-shaped array of 2.4 km of fiber optics lying loosely in existing telecommunications conduits underneath the Stanford University campus. This particular experiment is ideal because it demonstrates the wide variety of issues coming up on the horizon as we push for broader use of ambient noise. 
 \par
-We will discuss the noise level and sensitivities particular to recording with DAS, and a novel deployment that can greatly reduce costs (increasing data volumes): fiber loosely laying in existing telecommunications conduits. The array detects a wide variety of seismic noise sources that do not conform to the ideals of existing ambient noise theory: it sits in a seismically active region, 20 km from the Pacific ocean, 7 km from the San Francisco bay, with major highways on either side, a variety of roads with differing levels of traffic near the fiber, regular quarry blasts within 15 km, plumbing and HVAC systems throughout the site, multiple construction sites near the array, and foot and bicycle traffic throughout. With over 600 sensors continuously recording 50 samples per second since September 2016, manual inspection of most data is infeasible, making the automation tools shown in this paper critical to extracting subsurface information from these data.
+We will discuss the noise and sensitivities particular to recording with DAS, and a novel deployment that can greatly reduce costs: fiber loosely laying in existing telecommunications conduits. The array detects a wide variety of seismic noise sources that do not conform to the ideals of existing ambient noise theory: it sits in a seismically active region, 20 km from the Pacific ocean, 7 km from the San Francisco bay, with major highways on either side, a variety of roads with differing levels of traffic near the fiber, regular quarry blasts within 15 km, plumbing and HVAC systems throughout the site, multiple construction sites near the array, and foot and bicycle traffic throughout. With over 600 sensors continuously recording 50 samples per second since September 2016, manual inspection of most data is infeasible, making the automation tools shown in this paper critical to extracting subsurface information from the data.
 
 \vspace{-0.5cm}
 \subsection*{Outline of the paper}
@@ -69,39 +69,39 @@ We will discuss the noise level and sensitivities particular to recording with D
 	\vspace{-0.2cm}
 	\item Abstract/summary
 	\vspace{-0.3cm}
-	\item Introduction: (i) why care about near surface imaging, (ii) tradeoffs of sensor quality with cost and array density (DAS or MEMS \cite{Evans2014}, etc...), (iii) introduce idea of ambient noise to get rid of active sources, (iv) today dense data acquisition over longer periods of time (potentially continuous streaming) is becoming easy, so we must further automate ambient noise processing 
-	\vspace{-0.8cm}
-	\item Related work
+	\item Introduction: (i) use of near surface imaging, (ii) tradeoffs: sensor quality vs. cost and array density (DAS or MEMS \cite{Evans2014}, etc...), (iii) idea of ambient noise to get rid of active sources, (iv) dense data acquisition over longer periods of time (potentially continuously streaming in as it's recorded) is becoming easy, so we must further automate ambient noise processing.
+	\vspace{-0.3cm}
+	\item Related work:
 		\begin{enumerate}
 		\vspace{-0.3cm}
-		\item Background on ambient noise: how you can extract signals mimicking those of an active seismic survey with a source at any receiver \cite{Lobkis2001}, \cite{Lin2008}, \cite{Wapenaar2010A}, \cite{Wapenaar2010B}, how non-ideal noise sources can cause artifacts in extracted velocities, and with careful processing choices this can be done in the presence of non-ideal noise sources \cite{Bensen2007}, \cite{Daskalakis2016}, \cite{Zhan2013}, even those occuring at higher frequencies \cite{Girard2016}, \cite{Martin2015}, \cite{Martin2016}, \cite{Nakata2011}, \cite{Nakata2015}, \cite{Zeng2017}
+		\item Background on ambient noise: how you can extract signals mimicking those of an active seismic survey with a source at any receiver \cite{Lobkis2001}, \cite{Lin2008}, \cite{Wapenaar2010A}, \cite{Wapenaar2010B}, how non-ideal noise sources can cause artifacts in extracted velocities, and with careful processing choices this can be done in the presence of non-ideal noise sources \cite{Bensen2007}, \cite{Daskalakis2016}, \cite{Zhan2013}, even higher frequencies sources \cite{Girard2016}, \cite{Martin2015}, \cite{Martin2016}, \cite{Nakata2011}, \cite{Nakata2015}, \cite{Zeng2017}
 		\vspace{-0.1cm}
-		\item Background on Distributed Acoustic Sensing: how it works \cite{Posey2000}, \cite{Bakku2015}, how it has been used so far \cite{Daley2013}, \cite{Webster2013}, \cite{Mateeva2014}, and its limitations \cite{Kuvshinov2016}
+		\item Background on Distributed Acoustic Sensing: how it works \cite{Bakku2015}, \cite{Posey2000}, how it has been used so far \cite{Bakku2015}, \cite{Daley2013}, \cite{Webster2013}, \cite{Mateeva2014}, and its limitations \cite{Kuvshinov2016}
 		\vspace{-0.1cm}
 		\item Examples of ambient noise studies with DAS \cite{AjoFranklin2015}, \cite{Martin2015}, \cite{Martin2016}, \cite{Martin2017}, \cite{Zeng2017}
 		\vspace{-0.1cm}
-		\item Examples of how machine learning techniques have improved accuracy and sped up processing in other passive seismic applications \cite{Fisher2016}, \cite{Yoon2015}
+		\item Examples of how machine learning techniques have improved accuracy and sped up processing in other seismic applications \cite{Fisher2016}, \cite{Yoon2015}
 		\end{enumerate}
 	\vspace{-0.4cm}
-	\item Data Processing: we process the noise we record so that it mimicks data that would be recorded if the noise field followed theoretical ideals \cite{Bensen2007}
+	\item Data Processing on recorded noise so it mimics data from theoretically ideal noise field \cite{Bensen2007}
 		\begin{enumerate}
 		\vspace{-0.3cm}
-		\item New: clustering/separation of data with features including wavelet transforms (k-means, hierarchical agglomerative, SVM separation) \cite{Liao2005}, \cite{Hastie2009}, \cite{Mallat2008} to speed up noise field exploration, identification of potential issues
+		\item New: tools to aid people in speeding up noise field exploration and identification of potential issues including clustering/separation of data with features including wavelet transforms (k-means, hierarchical agglomerative, SVM separation) \cite{Liao2005}, \cite{Hastie2009}, \cite{Mallat2008} 
 		\vspace{-0.1cm}
-		\item Existing tool: STA/LTA \cite{Withers1998} in time and Fourier domain to detect earthquakes or quarry blasts \cite{Bensen2007}, \cite{Girard2016}, this could potentially be enhanced to detect small events efficiently with template matching and statistical methods \cite{Yoon2015}
+		\item Common tool: STA/LTA \cite{Withers1998} in time and Fourier domain to find earthquakes or quarry blasts \cite{Bensen2007}, \cite{Girard2016}, may better detect small events efficiently with fingerprint search \cite{Yoon2015}
 		\vspace{-0.1cm}
-		\item New: How to use earthquakes to estimate sensor coupling heterogeneity when array installation is relatively uncontrolled (loose fiber laying in a variety of conduits) 
+		\item New: How to use earthquakes to estimate sensor coupling heterogeneity when array installation is relatively uncontrolled (loose fiber laying in variety of conduits) 
 		\vspace{-0.1cm}
 		\item New: Automatically detect \& filter persistent noise sources from short time spectra
 		\vspace{-0.1cm}
 		\item New: Automate the design of f-k domain filters for particular user-selected clusters based on separation from other clusters. In particular, a demonstration of removing vehicle noise: time domain mute vs. manually designed f-k vs. automated design. 
 		\vspace{-0.1cm}
-		\item New: In the presence of strong sources, cross-coherence (whitening after correlation) has a tendency to work better than cross-correlation in the sense of producing virtual source response estimates with fewer artifacts \cite{Nakata2011}, \cite{Martin2016}. Show metrics to automate choice of cross-correlation or cross-coherence per receiver pair (can change over time).
+		\item New: In presence of strong/correlated sources, cross-coherence tends to work better than cross-correlation in the sense of producing virtual source response estimates with fewer artifacts \cite{Nakata2011}, \cite{Martin2016}. Show metrics to automate choice of stack weighting of cross-correlation or cross-coherence per receiver pair (can change over time).
 		\end{enumerate}
 	\vspace{-0.5cm}
-	\item Measuring improvements: to compare old and new processing methods measure convergence of virtual source response function estimates (both cross-coherence and cross-correlation) as more data is incorporated using the correlation coefficient like \cite{Seats2012}, but use a random sampling scheme over all data so convergence rates have error bars.
+	\item Measuring improvements: to compare old and new processing methods, measure convergence of virtual source response function estimates (both cross-coherence and cross-correlation) as more data is incorporated using the correlation coefficient like \cite{Seats2012}, but use a random sampling scheme over all data so convergence rates have error bars.
 	\vspace{-0.3cm}
-	\item Show a few dispersion images and a velocity model resulting from surface wave tomography, a couple of the possible uses of the virtual source response estimates
+	\item Show a few dispersion images and a velocity model resulting from surface wave tomography, a couple of the possible uses of the virtual source response estimates.
 	\vspace{-0.3cm}
 	\item Conclusions and future directions
 	\end{enumerate}
@@ -120,9 +120,9 @@ We will discuss the noise level and sensitivities particular to recording with D
 \\
 \textbf{Steve Cole} (\texttt{Steve.Cole@optasense.com}) is Manager of Integrated Analysis at OptaSense. He has worked in the oil and gas industry for over 30 years at companies including Fugro, Chevron, and 4th Wave Imaging, which he co-founded. He has a Ph.D. in geophysics from Stanford.
 \\
-\textbf{Martin Karrenbach} (\texttt{***email address}) *******
+\textbf{Martin Karrenbach} (\texttt{Martin.Karrenbach@optasense.com}) Martin Karrenbach is the senior manager of innovation at OptaSense in Brea, CA. He received his Ph.D. in geophysics from Stanford University in 1995. 
 \\
-\textbf{Biondo L. Biondi} (\texttt{**email address}) ****
+\textbf{Biondo L. Biondi} (\texttt{biondo@stanford.edu}) Biondo Biondi is a professor in the geophysics department at Stanford University, and leads the Stanford Exploration Project. He received his Ph.D. in geophysics from Stanford in 1990. He published the first book on 3D reflection seismology ("3D Seismic Imaging") and pioneered many methods in wavefield migration and velocity analysis.
 
 \vspace{-0.6cm}
 \begingroup
@@ -161,7 +161,7 @@ We will discuss the noise level and sensitivities particular to recording with D
 \bibitem{Kuvshinov2016} B.N. Kuvshinov, ``Interaction of helically wound fibre-optic cables with plane seismic waves," \textit{Geophysical Prospecting}, vol. 64, no. 3, pp. 671-688, 2016.
 \vspace{-0.2cm}
 % review on clustering of time series data
-\bibitem{Liao2005} T.W. Liao, ``Clustering of time series data- a survey," \textit{Pattern Recogn.}, vol. 38, no. 11, pp. 1857-1874, 2005.
+\bibitem{Liao2005} T.W. Liao, ``Clustering of time series data," \textit{Pattern Recogn.}, vol. 38, no. 11, pp. 1857-1874, 2005.
 \vspace{-0.2cm}
 % using horizontal components in interferometry as Rayleigh and Love wave components
 \bibitem{Lin2008} F. Lin, M.P. Moschetti and M.H. Ritzwoller, ``Surface wave tomography of the western United States from ambient seismic noise: Rayleigh and Love wave phase velocity maps," \textit{Geophys. J. Int.}, vol. 173, no. 1, pp. 281-298, 2008.
@@ -170,7 +170,7 @@ We will discuss the noise level and sensitivities particular to recording with D
 \bibitem{Lobkis2001} O.I. Lobkis and R.L. Weaver, ``On the emergence of the Green's function in the correlations of a diffuse field," \textit{J. Acoust. Soc. Am.}, vol. 110, no. 6, pp. 3011-3017, 2001.
 \vspace{-0.2cm}
 % wavelet transforms and basic signal processing reference
-\bibitem{Mallat2008} S. Mallat, \textit{A Wavelet Tour of Signal Processing, Third Edition: The Sparse Way}. Burlington, MA, USA: Academic Press, 2008.
+\bibitem{Mallat2008} S. Mallat, \textit{A Wavelet Tour of Signal Processing}, 3rd ed. Burlington, MA, USA: Academic Press, 2008.
 \vspace{-0.2cm}
 % example of interferometry of ambient noise recorded by a trenched DAS array
 \bibitem{Martin2015} E.R. Martin, J. Ajo-Franklin, S. Dou, N. Lindsey, T.M. Daley, B. Freifeld, M. Robertson, A. Wagner, C. Ulrich, ``Interferometry of ambient noise from a trenched distributed acoustic sensing array," \textit{SEG Technical Program Expanded Abstracts}, pp. 2445-2450, 2015.
