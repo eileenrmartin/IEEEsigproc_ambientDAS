@@ -3,13 +3,14 @@
 #include <cmath>
 #include <iostream>
 #include <vector>
+#include <cfloat>
 
 float _correlationCoeff(float *longTermFct, float *shortTermFct){
   /// Calculates the zero time lag correlation 
   /// but does so with blocked sums (so no overflow)
 
   float corrCoeff = 1.0;
-  /*float partialSum = 0.0;
+  float partialSum = 0.0;
   int len = ****;
 
   // break arrays into blocks
@@ -21,7 +22,7 @@ float _correlationCoeff(float *longTermFct, float *shortTermFct){
     }
   }
   // add any stragler terms at the end
-  corrCoeff += double(partialSum);*/
+  corrCoeff += double(partialSum);
 
   return corrCoeff;
 }
