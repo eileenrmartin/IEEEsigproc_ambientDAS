@@ -23,6 +23,7 @@ RUN mkdir -p /home/CorrelationCode/testData
 COPY testData/* /home/CorrelationCode/testData/
 RUN mkdir -p /home/CorrelationCode/src
 RUN mkdir -p /home/CorrelationCode/src/inter_results
+COPY src/inter_results/* /home/CorrelationCode/src/inter_results/
 RUN mkdir -p /home/CorrelationCode/src/params
 RUN mkdir -p /home/CorrelationCode/src/params/params1
 COPY src/params/params1/* /home/CorrelationCode/src/params/params1/
