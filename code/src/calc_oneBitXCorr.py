@@ -5,7 +5,7 @@ import datetime as dt
 import struct
 import obspy
 import sys
-import xcorr
+#import xcorr
 
 sys.path.append('/home/ermartin/PassiveSeismicArray')
 # get parameters: startTime, secondsPerFile, secondsPerWindowWidth, secondsPerWindowOffset, xCorrMaxTimeLagSeconds, nFiles, outfilePath, outfileList, srcChList, startCh, endCh, minFrq, maxFrq

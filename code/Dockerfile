@@ -12,6 +12,9 @@ RUN apt-get -y install python-pip
 RUN apt-get -y install python-dev
 RUN pip install numpy
 RUN pip install matplotlib
+RUN apt-get -y install libopenblas-dev
+RUN pip install obspy
+
 
 # tools for productivity
 RUN apt-get -y install vim
