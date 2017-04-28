@@ -1,9 +1,12 @@
+myPathToCode = /home/ermartin/StanfordDASArray/IEEEsigproc_ambientDAS/code
+# /home/CorrelationCode
+
 oneBitXCorr1:
-	python calc_oneBitXCorr.py /home/CorrelationCode/src/params/params1
+	python calc_oneBitXCorr.py ${myPathToCode}/src/params/params1
 
 plotOneBitXCorr1:
-	python plot_oneBitXCorr.py /home/CorrelationCode/src/params/params1
+	python plot_oneBitXCorr.py ${myPathToCode}/src/params/params1
 
 
-plotOneBitXCorrs1To6:
-	python plot_oneBitXCorrs_multi_file_lists.py /home/CorrelationCode/src/params/params1plot
+plotOneBitXCorrs1:
+	python plot_oneBitXCorrs_multi_file_lists.py ${myPathToCode}/src/params/params1plot rasterTestPlot

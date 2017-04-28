@@ -7,7 +7,7 @@ import obspy
 import sys
 #import xcorr
 
-sys.path.append('/home/ermartin/PassiveSeismicArray')
+#sys.path.append('/home/ermartin/PassiveSeismicArray')
 # get parameters: startTime, secondsPerFile, secondsPerWindowWidth, secondsPerWindowOffset, xCorrMaxTimeLagSeconds, nFiles, outfilePath, outfileList, srcChList, startCh, endCh, minFrq, maxFrq
 paramsPath = sys.argv[1]
 sys.path.append(paramsPath)

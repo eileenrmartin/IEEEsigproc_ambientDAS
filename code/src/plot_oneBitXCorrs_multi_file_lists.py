@@ -5,6 +5,8 @@ paramsPath = sys.argv[1]
 sys.path.append(paramsPath)
 from params import *
 
+filenameStart = sys.argv[2]
+
 srcFile = open(srcChList,'r')
 srcChannelsStrings = srcFile.readlines()
 srcFile.close()
@@ -96,7 +98,7 @@ for ch in srcChannels:
     plt.colorbar()
     #plt.scatter(arrivalTimesV1[1:-1],channels[1:-1],s=0.5,c='k')
     #plt.scatter(arrivalTimesV2[1:-1],channels[1:-1],s=0.5,c='g')
-    plt.savefig('fig/xcorrRaster_noLines_1to18_vs_ch_'+str(ch)+'.pdf')
+    plt.savefig('fig/'+filenameStart+'_vs_ch_'+str(ch)+'.pdf')
     plt.clf()
 
     # plot some nearby wiggles
