@@ -21,16 +21,17 @@ RUN apt-get -y install vim
 
 # get starting code here 
 RUN mkdir -p /scratch
-RUN mkdir -p /home/CorrelationCode
-RUN mkdir -p /home/CorrelationCode/testData
-COPY testData/* /home/CorrelationCode/testData/
-RUN mkdir -p /home/CorrelationCode/src
-RUN mkdir -p /home/CorrelationCode/src/inter_results
-COPY src/inter_results/* /home/CorrelationCode/src/inter_results/
-RUN mkdir -p /home/CorrelationCode/src/params
-RUN mkdir -p /home/CorrelationCode/src/params/params1
-COPY src/params/params1/* /home/CorrelationCode/src/params/params1/
-COPY src/* /home/CorrelationCode/src/
+RUN mkdir -p /data
+RUN mkdir -p /CorrelationCode
+RUN mkdir -p /CorrelationCode/testData
+COPY testData/* /CorrelationCode/testData/
+RUN mkdir -p /CorrelationCode/src
+RUN mkdir -p /CorrelationCode/src/inter_results
+COPY src/inter_results/* /CorrelationCode/src/inter_results/
+RUN mkdir -p /CorrelationCode/src/params
+RUN mkdir -p /CorrelationCode/src/params/params1
+COPY src/params/params1/* /CorrelationCode/src/params/params1/
+COPY src/* /CorrelationCode/src/
 
 # so installed codes can be accessed
 ENV PATH=/opt:${PATH}
