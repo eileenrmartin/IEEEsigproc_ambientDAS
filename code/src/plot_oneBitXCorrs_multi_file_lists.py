@@ -94,6 +94,7 @@ for ch in srcChannels:
     plt.xlabel('time lag (sec)')
     plt.title('one bit cross-correlation, virtual source '+str(ch))
     plt.colorbar()
+    # uncomment two lines below if you want homogeneous velocity picks
     #plt.scatter(arrivalTimesV1[1:-1],channels[1:-1],s=0.5,c='k')
     #plt.scatter(arrivalTimesV2[1:-1],channels[1:-1],s=0.5,c='g')
     plt.savefig('fig/xcorrRaster_noLines_1to18_vs_ch_'+str(ch)+'.pdf')
