@@ -5,18 +5,18 @@
 #include <vector>
 #include <cfloat>
 
-float _correlationCoeff(float *longTermFct, float *shortTermFct){
+double _correlationCoeff(float *longTermFct, float *shortTermFct, int n){
   /// Calculates the zero time lag correlation 
   /// but does so with blocked sums (so no overflow)
+  /// n is length of those arrays
 
-  float corrCoeff = 1.0;
+  double corrCoeff = 0.0;
   float partialSum = 0.0;
-  int len = ****;
 
   // break arrays into blocks
-  for(int i=0; i<len; ++i){
+  for(int i=0; i<n; ++i){
     partialSum += longTermFct[i] * shortTermFct[i];
-    if(std::abs(partialSum) > 0.25*FLT_MAX){  // *****check what max floating point value is named******
+    if(std::abs(partialSum) > 0.25*FLT_MAX){  // if the partial sum is getting too big for floats, throw this sum into the double counter
       corrCoeff += double(partialSum);
       partialSum = 0;
     }
@@ -32,7 +32,7 @@ static PyObject* correlationCoeff(PyObject* self, PyObject* args){
 	float  *longTermFct=NULL, *shortTermFct=NULL;
 	PyObject *output=NULL;
 
-	if (!PyArg_ParseTuple(args,"OO", &longTermArg, &shortTermArg)) return NULL;
+	if (!PyArg_ParseTuple(args,"OOi", &longTermArg, &shortTermArg)) return NULL;
 	longTermFct = (float *)PyArray_GETPTR1(longTermArg,0);
     if (longTermFct == NULL) return NULL;
     shortTermFct = (float *)PyArray_GETPTR1(shortTermArg,0);
@@ -40,12 +40,12 @@ static PyObject* correlationCoeff(PyObject* self, PyObject* args){
 
     //int nd = PyArray_NDIM(longTermFct); // number fo dimensions
 
-    float c = _correlationCoeff(longTermFct,shortTermFct);
+    double c = _correlationCoeff(longTermFct,shortTermFct);
 
     Py_DECREF(longTermFct);
     Py_DECREF(shortTermFct);
 
-	return Py_BuildValue("f", c);
+	return Py_BuildValue("d", c);
 }
 
 static PyMethodDef CorrelationCoeffMethods[] = {

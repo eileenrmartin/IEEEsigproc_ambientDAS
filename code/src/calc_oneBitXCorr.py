@@ -6,7 +6,7 @@ import struct
 import obspy
 import sys
 from reader import readTrace
-#import xcorr
+import corrs
 
 #sys.path.append('/home/ermartin/PassiveSeismicArray')
 # get parameters: startTime, secondsPerFile, secondsPerWindowWidth, secondsPerWindowOffset, xCorrMaxTimeLagSeconds, nFiles, outfilePath, outfileList, srcChList, startCh, endCh, minFrq, maxFrq
@@ -21,10 +21,12 @@ import regularFileSet as rfs
 #cdef extern from "xcorrmodule.h":
 #	cdef cppclass 
         
-def crossCorrOneBit(virtualSrcTrace, allOtherReceiversTraces, nLagSamples): #, version = 'C'):
-    #if(version == 'C'):
-	#xCorr = xcorr.oneBitXCorr(virtualSrcTrace, allOtherReceiversTraces, nLagSamples)
-    #else:
+def crossCorrOneBit(virtualSrcTrace, allOtherReceiversTraces, nLagSamples, version = 'C'):
+    '''version = C or python where that determines which language is used for correlation calculation'''
+    if(version == 'C'):
+	xCorr = corrs*********
+	#xCorr = corrs.oneBitXCorr(virtualSrcTrace, allOtherReceiversTraces, nLagSamples)
+    else:
     numberChannels = allOtherReceiversTraces.shape[0]
     nt = allOtherReceiversTraces.shape[1]
     xCorr = np.empty((numberChannels,1+2*nLagSamples),dtype=np.int32)
