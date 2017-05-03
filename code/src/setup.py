@@ -1,10 +1,10 @@
 from distutils.core import setup, Extension
-import numpy
+#import numpy
 
-module1 = Extension('corrs', sources=['corrsmodule.cpp'])
+corrs_module = Extension('corrs_module', sources=['corrs_module.cpp'])
 
 import os
 os.environ["CC"] = "gcc"
 os.environ["CXX"] = "gcc"
 
-setup (name = 'PackageName', version = '1.0', description = 'This is a demo package', ext_modules = [module1])
+setup(ext_modules=[corrs_module])

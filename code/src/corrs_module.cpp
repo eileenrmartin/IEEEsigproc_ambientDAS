@@ -1,9 +1,6 @@
 #include <Python.h>
 #include "/usr/local/lib/python2.7/dist-packages/numpy/core/include/numpy/arrayobject.h"
-#include <cmath>
-#include <iostream>
-#include <vector>
-#include <cfloat>
+#include <float.h>
 
 double _correlationCoeff(float *longTermFct, float *shortTermFct, int n){
   /// Calculates the zero time lag correlation 
@@ -14,9 +11,9 @@ double _correlationCoeff(float *longTermFct, float *shortTermFct, int n){
   float partialSum = 0.0;
 
   // break arrays into blocks
-  for(int i=0; i<n; ++i){
+  for(int i=0; i< n; ++i){
     partialSum += longTermFct[i] * shortTermFct[i];
-    if(std::abs(partialSum) > 0.25*FLT_MAX){  // if the partial sum is getting too big for floats, throw this sum into the double counter
+    if(i % 10000 == 1){  // if the partial sum might get too big for floats, throw this sum into the double counter
       corrCoeff += double(partialSum);
       partialSum = 0;
     }
@@ -27,37 +24,36 @@ double _correlationCoeff(float *longTermFct, float *shortTermFct, int n){
   return corrCoeff;
 }
 
-static PyObject* correlationCoeff(PyObject* self, PyObject* args){
+static PyObject* corrs_func(PyObject* self, PyObject* args){
     PyObject  *longTermArg=NULL, *shortTermArg=NULL;
     float  *longTermFct=NULL, *shortTermFct=NULL;
-    PyObject *output=NULL;
-    int nSamples;
-
-    if (!PyArg_ParseTuple(args,"OOi", &longTermArg, &shortTermArg, &nSamples)) return NULL;
+    int nSamplesArg;
+    double c;
+   
+    if (!PyArg_ParseTuple(args,"OOi", &longTermArg, &shortTermArg, &nSamplesArg)) return NULL;
+    
     longTermFct = (float *)PyArray_GETPTR1(longTermArg,0);
     if (longTermFct == NULL) return NULL;
     shortTermFct = (float *)PyArray_GETPTR1(shortTermArg,0);
     if (shortTermFct == NULL) return NULL;
 
-    //int nd = PyArray_NDIM(longTermFct); // number fo dimensions
-
-    double c = _correlationCoeff(longTermFct,shortTermFct,nSamples);
-
+    c = _correlationCoeff(longTermFct,shortTermFct,nSamplesArg);
+    
     Py_DECREF(longTermFct);
     Py_DECREF(shortTermFct);
-
-	return Py_BuildValue("d", c);
+ 
+    return Py_BuildValue("d", c);
 }
 
-static PyMethodDef CorrelationCoeffMethods[] = {
-	{"correlationCoeff",correlationCoeff,METH_VARARGS, "Calculate the 0 lag correlation of two time series"},
+static PyMethodDef CorrsMethods[] = {
+	{"corrs_func", corrs_func, METH_VARARGS, "Calculate the 0 lag correlation of two time series"},
 	{NULL,NULL,0,NULL}
 
 };
 
 PyMODINIT_FUNC
-initcorrs(void){
-	(void) Py_InitModule("corrs",CorrelationCoeffMethods);
+initcorrs_module(void){
+	(void) Py_InitModule("corrs_module",CorrsMethods);
 	import_array();
 }
 
