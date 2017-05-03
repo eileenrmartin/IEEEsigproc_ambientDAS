@@ -5,6 +5,7 @@ import datetime as dt
 import struct
 import obspy
 import sys
+from reader import readTrace
 #import xcorr
 
 #sys.path.append('/home/ermartin/PassiveSeismicArray')
@@ -15,21 +16,6 @@ from params import *
 import fileSet as fs
 import regularFileSet as rfs
 
-nTxtFileHeader = 3200
-nBinFileHeader = 400
-nTraceHeader = 240
-def readTrace(infile,nSamples,dataLen,traceNumber,endian,startSample,nSamplesToRead):
-    '''infile is .sgy, nSamples is the number of samples per sensor, and traceNumber is the sensor number (start with 1),dataLen is number of bytes per data sample'''
-
-    fin = open(infile, 'rb') # open file for reading binary mode
-    startData = nTxtFileHeader+nBinFileHeader+nTraceHeader+(traceNumber-1)*(nTraceHeader+dataLen*nSamples)+startSample*dataLen
-    fin.seek(startData)
-    thisTrace = np.zeros(nSamplesToRead)
-    for i in range(nSamplesToRead):
-       	# was >f before
-       	thisTrace[i] = struct.unpack(endian+'f',fin.read(dataLen))[0]
-    fin.close()
-    return thisTrace
 
 
 #cdef extern from "xcorrmodule.h":
