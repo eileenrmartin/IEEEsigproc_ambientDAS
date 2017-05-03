@@ -28,19 +28,20 @@ double _correlationCoeff(float *longTermFct, float *shortTermFct, int n){
 }
 
 static PyObject* correlationCoeff(PyObject* self, PyObject* args){
-	PyObject  *longTermArg=NULL, *shortTermArg=NULL;
-	float  *longTermFct=NULL, *shortTermFct=NULL;
-	PyObject *output=NULL;
+    PyObject  *longTermArg=NULL, *shortTermArg=NULL;
+    float  *longTermFct=NULL, *shortTermFct=NULL;
+    PyObject *output=NULL;
+    int nSamples;
 
-	if (!PyArg_ParseTuple(args,"OOi", &longTermArg, &shortTermArg)) return NULL;
-	longTermFct = (float *)PyArray_GETPTR1(longTermArg,0);
+    if (!PyArg_ParseTuple(args,"OOi", &longTermArg, &shortTermArg, &nSamples)) return NULL;
+    longTermFct = (float *)PyArray_GETPTR1(longTermArg,0);
     if (longTermFct == NULL) return NULL;
     shortTermFct = (float *)PyArray_GETPTR1(shortTermArg,0);
     if (shortTermFct == NULL) return NULL;
 
     //int nd = PyArray_NDIM(longTermFct); // number fo dimensions
 
-    double c = _correlationCoeff(longTermFct,shortTermFct);
+    double c = _correlationCoeff(longTermFct,shortTermFct,nSamples);
 
     Py_DECREF(longTermFct);
     Py_DECREF(shortTermFct);
