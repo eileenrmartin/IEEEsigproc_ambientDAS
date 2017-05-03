@@ -62,6 +62,34 @@ class regularFileSet(fileSet):
 					fileList.append(self.generateFilenameDTObj(currentTime))
 					currentTime = currentTime + timeToNextFile
 				return fileList
+
+	def getFirstFileStartingThisDay(self,dateObject):
+		'''Returns the first filename that contains data starting after 12:00 am on that date given a datetime.date object'''
+		midnightDate = datetime.datetime(dateObject.year, dateObject.month, dateObject.day, 0, 0, 0, 0) # start of the day
+		nextMidnightDate = datetime.timedelta(days=1)+midnightDate # start of the next day and end of this day
+		if((midnightDate > self.endTime) or (nextMidnightDate < self.startTime)): # if this day doesn't overlap with the file set, return an empty string
+			return 0
+		else: 
+			firstTime = self.startTime # if day starts before and extends into file set, use first file in file set
+			if(self.startTime < midnightDate): # if day starts during file set, get file starting just after midnight
+				timeDiff = midnightDate - self.startTime
+				firstTime = self.startTime + datetime.timedelta(seconds = self.secondsBetweenFiles*(1+int(timeDiff.total_seconds())/int(self.secondsBetweenFiles)))
+			firstFileName = self.generateFilenameDTObj(firstTime)
+			return firstFileName
+
+	def getLastFileStartingThisDay(self,dateObject):
+		'''Returns the last filename that contains data starting before 11:59:99.9999 pm on that date given a datetime.date object'''
+		midnightDate = datetime.datetime(dateObject.year, dateObject.month, dateObject.day, 0, 0, 0, 0) # start of the day
+		nextMidnightDate = datetime.timedelta(days=1)+midnightDate # start of the next day and end of this day
+		if((midnightDate > self.endTime) or (nextMidnightDate < self.startTime)): # if this day doesn't overlap with this file set
+			return 0
+		else:
+			lastTime = self.endTime - datetime.timedelta(seconds=self.secondsBetweenFiles) # if day starts in and extends beyond file set, use last file in file set
+			if(self.endTime > nextMidnightDate): # if day ends during file set, get last file before midnight
+				timeDiff = nextMidnightDate - self.startTime
+				lastTime = self.startTime + datetime.timedelta(seconds = self.secondsBetweenFiles*(int(timeDiff.total_seconds())/int(self.secondsBetweenFiles)))
+			lastFileName = self.generateFilenameDTObj(lastTime)
+			return lastFileName
 					
 	def checkUnion(self, otherRFS):
 		'''Checks if this RFS and another RFS are contiguous neighbors or overlapping. Returns False if they are not, and a regular file set made up of their union if they are.'''

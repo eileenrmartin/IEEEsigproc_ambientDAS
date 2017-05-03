@@ -59,6 +59,7 @@ class fileSet:
 				if(myFilename[currentIndex:currentIndex+nChars] != part): # check that the filename includes this string
 					print("Warning: characters "+str(currentIndex)+" to "+str(currentIndex+nChars-1)+" should be "+part+" but are really "+myFilename[currentIndex:currentIndex+nChars])
 				currentIndex += nChars # go ahead to next part of name
-		return datetime.datetime(myTime['year'],myTime['month'],myTime['day'],myTime['hour'],myTime['minute'],myTime['second'],1000*myTime['millisecond'])
+		microseconds = 1000*myTime['millisecond']
+		return datetime.datetime(myTime['year'],myTime['month'],myTime['day'],myTime['hour'],myTime['minute'],myTime['second'],microseconds)
 
 
