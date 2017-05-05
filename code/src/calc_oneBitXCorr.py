@@ -79,6 +79,11 @@ currentWindowEndTime = currentWindowStartTime + windowLength
 
 outfileList = []
 
+# load the estimator 
+from sklearn.externals import joblib
+clusterFileName = 'kmeans.pkl' # or 'aggloCluster.pkl'
+estimator = joblib.load(clusterFileName)
+
 # for each time window, do the cross correlation and write its xcorr to a file
 while currentWindowEndTime < endTime:
     print(currentWindowStartTime)
@@ -116,11 +121,45 @@ while currentWindowEndTime < endTime:
 
     # get rid of laser drift, then do one bit simplification
     dataRate = dataRate - np.median(dataRate,axis=0)
-    dataRate[dataRate >= 0] = 1
-    dataRate[dataRate <= 0] = -1
-    dataRate = dataRate.astype(np.int32)
+#     dataRate[dataRate >= 0] = 1
+#     dataRate[dataRate <= 0] = -1
+#     dataRate = dataRate.astype(np.int32)
 
-    # Fantine will do some muting in here *******
+    # compute cwt scales
+    nf = 25
+    delta = 1.0 / float(samplesPerSecond)
+    # compute cwt over time
+    f = np.logspace(np.log10(minFrq), np.log10(maxFrq), nf)
+    wf = 'morlet'
+    w0 = 8
+    scales = cwt.scales_from_fourier(f, wf, w0)
+    cwtScales = np.empty((nChannels, samplesPerWindow, nf * 2), dtype='complex128')
+    for index, trace in enumerate(dataRate):
+        cwtScales[index,:(samplesPerWindow - 1),:nf] = cwt.cwt(trace, delta, scales, wf, w0).T
+    # compute cwt over space
+    minSpaceFrq = 0.5
+    maxSpaceFrq = 50 
+    f = np.logspace(np.log10(minSpaceFrq), np.log10(maxSpaceFrq), nf)
+    scales = cwt.scales_from_fourier(f, wf, w0)
+    for index, channel in enumerate(dataRate.T):
+        cwtScales[:,index,nf:] = cwt.cwt(channel, delta, scales, wf, w0).T
+
+    # padding to make my life easier
+    cwtScales[:,samplesPerWindow,:] = cwtScales[:,(samplesPerWindow - 1),:]
+
+    # figure out which cluster the sample belongs to
+    samplingRate = 25
+    nSubSamples = int(samplesPerWindow / samplingRate)
+    features = np.mean(np.reshape(np.abs(cwtScales), (nChannels, nSubSamples, samplingRate, nf * 2)), axis=2)
+    labels = estimator.predict(scale(np.reshape(features, (nChannels * nSubSamples, -1)), copy=False))
+    labels = np.reshape(labels, (nChannels, -1))
+    
+    # mute out the coefficients 
+    # TODO : check which cluster number corresponds to the cars after training
+
+    # apply inverse cwt to reconstruct the signal
+    for index in range(samplesPerWindow):
+        dataRate[:,index] = cwt.icwt(cwtScales[:,index,nf:].T, delta, scales, wf, w0)
 
     # do the cross-correlations and save them
     nLagSamples = int(xCorrMaxTimeLagSeconds*samplesPerSecond)
