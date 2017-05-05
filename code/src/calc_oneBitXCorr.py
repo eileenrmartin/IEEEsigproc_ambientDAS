@@ -6,7 +6,7 @@ import struct
 import obspy
 import sys
 from reader import readTrace
-import corrs
+#import corrs
 
 #sys.path.append('/home/ermartin/PassiveSeismicArray')
 # get parameters: startTime, secondsPerFile, secondsPerWindowWidth, secondsPerWindowOffset, xCorrMaxTimeLagSeconds, nFiles, outfilePath, outfileList, srcChList, startCh, endCh, minFrq, maxFrq
@@ -16,17 +16,19 @@ from params import *
 import fileSet as fs
 import regularFileSet as rfs
 
-
+nTxtFileHeader = 3200
+nBinFileHeader = 400
+nTraceHeader = 240
 
 #cdef extern from "xcorrmodule.h":
 #	cdef cppclass 
         
-def crossCorrOneBit(virtualSrcTrace, allOtherReceiversTraces, nLagSamples, version = 'C'):
+def crossCorrOneBit(virtualSrcTrace, allOtherReceiversTraces, nLagSamples, version = 'python'): #'C'):
     '''version = C or python where that determines which language is used for correlation calculation'''
-    if(version == 'C'):
-	xCorr = corrs*********
-	#xCorr = corrs.oneBitXCorr(virtualSrcTrace, allOtherReceiversTraces, nLagSamples)
-    else:
+    #if(version == 'C'):
+    #xCorr = corrs*********
+    #xCorr = corrs.oneBitXCorr(virtualSrcTrace, allOtherReceiversTraces, nLagSamples)
+    #else:
     numberChannels = allOtherReceiversTraces.shape[0]
     nt = allOtherReceiversTraces.shape[1]
     xCorr = np.empty((numberChannels,1+2*nLagSamples),dtype=np.int32)
@@ -49,16 +51,22 @@ srcChannels = [int(ch) for ch in srcChannelsStrings]
 nChannels = endCh-startCh+1 # number of receiver channels
 
 # starting time and file set organization
-startYr = startTime.year
-startMo = startTime.month
-startDay = startTime.day
-startHr = startTime.hour
-startMin = startTime.minute
-startSec = startTime.second
-startMil = int(0.001*startTime.microsecond)
-regFileSet = rfs.regularFileSet(parts,startYr,startMo,startDay,startHr,startMin,startSec,startMil,secondsPerFile,nFiles)
-endTime = startTime + dt.timedelta(seconds=secondsPerFile*nFiles-1) # last time in last file
-fileList = regFileSet.getFileNamesInRange(startTime,endTime)
+regFileSets = []
+fileList = []
+for idx,startTime in enumerate(startTimes):
+    nFiles = nFiless[idx]
+    startYr = startTime.year
+    startMo = startTime.month
+    startDay = startTime.day
+    startHr = startTime.hour
+    startMin = startTime.minute
+    startSec = startTime.second
+    startMil = int(0.001*startTime.microsecond)
+    regFileSets.append(rfs.regularFileSet(parts,startYr,startMo,startDay,startHr,startMin,startSec,startMil,secondsPerFile,nFiles))
+    endTime = startTime + dt.timedelta(seconds=secondsPerFile*nFiles-1) # last time in last file
+    tempFileList = regFileSets[-1].getFileNamesInRange(startTime,endTime)
+    for f in tempFileList:
+	fileList.append(f)
 # read a little header info about sample rate and number of channels
 import os
 nBytesPerFile = os.path.getsize(fileList[0])
@@ -74,7 +82,7 @@ samplesPerFile = samplesPerSecond*secondsPerFile
 samplesPerWindow = secondsPerWindowWidth*samplesPerSecond
 windowOffset = dt.timedelta(seconds=secondsPerWindowOffset)
 windowLength = dt.timedelta(seconds=secondsPerWindowWidth)
-currentWindowStartTime = startTime
+currentWindowStartTime = startTimes[0]
 currentWindowEndTime = currentWindowStartTime + windowLength
 
 outfileList = []
@@ -86,9 +94,16 @@ estimator = joblib.load(clusterFileName)
 
 # for each time window, do the cross correlation and write its xcorr to a file
 while currentWindowEndTime < endTime:
-    print(currentWindowStartTime)
 
-    thisWindowsFileSet= regFileSet.getFileNamesInRange(currentWindowStartTime,currentWindowEndTime)
+    thisWindowsFileSet = []
+    for i,regFileSet in enumerate(regFileSets):
+        thisWindowsFileSet= regFileSet.getFileNamesInRange(currentWindowStartTime,currentWindowEndTime)
+        if(len(thisWindowsFileSet) > 0):
+            currentWindowStartTime = regFileSet.getTimeFromFilename(thisWindowsFileSet[0]) 
+            currentWindowEndTime = currentWindowStartTime + windowLength
+            break
+    print(currentWindowStartTime)
+    #print(thisWindowsFileSet) # ****just while debugging
 
     data = np.zeros((nChannels,samplesPerWindow))
     startIdx = 0
@@ -109,7 +124,8 @@ while currentWindowEndTime < endTime:
         for ch in range(startCh,endCh+1):
             data[ch-startCh,startIdx:endIdx] =  readTrace(filename,samplesPerFile,4,ch,'>',startIdxReading,nIdxToRead)
         startIdx = endIdx # index in data array
-            
+    #print(data) # ************just for debugging nan issue*******    
+        
     # take time derivatives
     dataRate = data[:,1:] - data[:,:-1]
 
