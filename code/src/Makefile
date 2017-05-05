@@ -1,5 +1,5 @@
-#myPathToCode = /home/ermartin/StanfordDASArray/IEEEsigproc_ambientDAS/code
-myPathToCode = /CorrelationCode
+myPathToCode = /home/ermartin/StanfordDASArray/IEEEsigproc_ambientDAS/code
+#myPathToCode = /CorrelationCode
 
 oneBitXCorr1:
 	python calc_oneBitXCorr.py ${myPathToCode}/src/params/params1
