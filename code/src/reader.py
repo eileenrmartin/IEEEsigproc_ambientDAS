@@ -1,5 +1,6 @@
 import numpy as np
 import struct
+import matplotlib.pyplot as plt
 
 nTxtFileHeader = 3200
 nBinFileHeader = 400
@@ -10,12 +11,8 @@ def readTrace(infile,nSamples,dataLen,traceNumber,endian,startSample,nSamplesToR
     fin = open(infile, 'rb') # open file for reading binary mode
     startData = nTxtFileHeader+nBinFileHeader+nTraceHeader+(traceNumber-1)*(nTraceHeader+dataLen*nSamples)+startSample*dataLen
     fin.seek(startData)
-    thisTrace = np.zeros(nSamplesToRead)
-    thisDataBinary = fin.read(nSamplesToRead*dataLen)
-    thisDataArray = struct.unpack_from(endian+'f',thisDataBinary)
-    for i in range(nSamplesToRead):
-       	# was >f before
-       	thisTrace[i] = struct.unpack(endian+'f',fin.read(dataLen))[0]
+    thisDataBinary = fin.read(nSamplesToRead*dataLen) # read binary bytes from file
     fin.close()
-    return thisTrace
+    thisDataArray = struct.unpack_from(endian+('f')*nSamplesToRead,thisDataBinary) # get data as a tuple of floats
+    return np.asarray(thisDataArray,dtype=np.float32)
 

@@ -74,7 +74,6 @@ nChannelsTotal = 620
 bytesPerChannel = (nBytesPerFile-nTxtFileHeader-nBinFileHeader-240*nChannelsTotal)/nChannelsTotal
 samplesPerChannel = bytesPerChannel/4
 samplesPerSecond = samplesPerChannel/secondsPerFile 
-print("samples per second "+str(samplesPerSecond))
 NyquistFrq = float(samplesPerSecond)/2.0
 samplesPerFile = samplesPerSecond*secondsPerFile
 
@@ -90,7 +89,8 @@ outfileList = []
 # load the estimator 
 from sklearn.externals import joblib
 clusterFileName = 'kmeans.pkl' # or 'aggloCluster.pkl'
-estimator = joblib.load(clusterFileName)
+estimator = joblib.load(clusterFileName) # ******************************
+# **********uncomment estimator = .... as soon as that file is added to git repo ******
 
 # for each time window, do the cross correlation and write its xcorr to a file
 while currentWindowEndTime < endTime:
@@ -103,7 +103,7 @@ while currentWindowEndTime < endTime:
             currentWindowEndTime = currentWindowStartTime + windowLength
             break
     print(currentWindowStartTime)
-    #print(thisWindowsFileSet) # ****just while debugging
+
 
     data = np.zeros((nChannels,samplesPerWindow))
     startIdx = 0
@@ -120,15 +120,18 @@ while currentWindowEndTime < endTime:
             endIdxReading = int(samplesPerSecond*secondsAfterStart)
         nIdxToRead = endIdxReading-startIdxReading
         endIdx = startIdx + nIdxToRead # end of this subset of data in array
+
         # read the data
         for ch in range(startCh,endCh+1):
             data[ch-startCh,startIdx:endIdx] =  readTrace(filename,samplesPerFile,4,ch,'>',startIdxReading,nIdxToRead)
         startIdx = endIdx # index in data array
-    #print(data) # ************just for debugging nan issue*******    
+  
         
     # take time derivatives
     dataRate = data[:,1:] - data[:,:-1]
 
+
+    
     # do bandpass from minFrq to maxFrq
     for ch in range(startCh,endCh+1):
         thisTrace = obspy.core.trace.Trace(data=dataRate[ch-startCh,:],header={'delta':1.0/float(samplesPerSecond),'sampling_rate':samplesPerSecond})
