@@ -7,6 +7,7 @@ import obspy
 import sys
 from reader import readTrace
 #import corrs
+import cwt
 
 #sys.path.append('/home/ermartin/PassiveSeismicArray')
 # get parameters: startTime, secondsPerFile, secondsPerWindowWidth, secondsPerWindowOffset, xCorrMaxTimeLagSeconds, nFiles, outfilePath, outfileList, srcChList, startCh, endCh, minFrq, maxFrq
