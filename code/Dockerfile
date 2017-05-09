@@ -1,8 +1,10 @@
-FROM gcc
+FROM dwilbraham/tbb
+
+#FROM gcc
 
 # for parallelism
-ENV TBB_URL https://github.com/01org/tbb/releases/download/2017_U5/tbb2017_20170226oss_lin.tgz
-RUN wget ${TBB_URL} && tar -C /opt -xf tbb2017_20170226oss_lin.tgz && rm tbb2017_20170226oss_lin.tgz
+#ENV TBB_URL https://github.com/01org/tbb/releases/download/2017_U5/tbb2017_20170226oss_lin.tgz
+#RUN wget ${TBB_URL} && tar -C /usr/local -xf tbb2017_20170226oss_lin.tgz && rm tbb2017_20170226oss_lin.tgz && mv /usr/local/tbb2017_20170226oss /usr/local/tbb
 
 # for basic python tools
 RUN apt-get update
@@ -33,4 +35,4 @@ COPY src/params/params1/* /CorrelationCode/src/params/params1/
 COPY src/* /CorrelationCode/src/
 
 # so installed codes can be accessed
-ENV PATH=/opt:${PATH}
+#ENV PATH=/usr/local/tbb:${PATH}
