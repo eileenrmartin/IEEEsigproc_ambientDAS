@@ -48,4 +48,6 @@ Type exit when you're done looking around in there.
 
 7. now interact with the container through a shell (/data/biondo/DAS is a path on cees-mazama and /data is a directory that is made in the Dockerfile):
 singularity shell -B /data/biondo/DAS:/data test-img.img
-type exit when you're done.
+
+If you want tab completion and up arrow to work in command line, type bash.
+Type exit when you're done.

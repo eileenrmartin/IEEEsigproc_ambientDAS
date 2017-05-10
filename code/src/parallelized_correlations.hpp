@@ -22,7 +22,7 @@ void onePairOneBitXCorr(float *virtualSrcVec, float *aReceiver, int *xcorrOfPair
 
 	// for each lag, multiply and add to cross correlation for the corresponding tau value, then slide along
 	int sumWidth = nSamples - 2*nLags;
-	for(int i=-1*nLagSamples; i<=nLags; ++i){
+	for(int i=-1*nLags; i<=nLags; ++i){
 		int startSample = i + nLags;
 		int endSamples = startSample + sumWidth;
 		xcorrOfPair[i] = 0; 
@@ -39,6 +39,6 @@ void par_oneBitXcorr(float *virtualSrcVec, int nSamples, float *receiverMat, int
 	// virtualSrcVec shoudl be 1+2*nSamples long
 
 	// do the correlations of the one bit thresholded data
-	tbb::parallel_for( size_t(1), nRecs+1, size_t(1), [=](size_t i){onePairOneBitXCorr(virtualSrcVec[0], receiverMat[i*nSamples], xcorrMat[i*nLags], nSamples, nLags);});
+	tbb::parallel_for( size_t(1), size_t(nRecs+1), size_t(1), [=](size_t i){onePairOneBitXCorr(&virtualSrcVec[0], &receiverMat[i*nSamples], &xcorrMat[i*nLags], nSamples, nLags);});
 
 }

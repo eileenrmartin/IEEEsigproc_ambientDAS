@@ -7,9 +7,10 @@ static PyObject* crosscorrs_func(PyObject* self, PyObject* args){
     PyObject  *virtualSrcArg=NULL, *receiverArg=NULL, *xcorrArg=NULL;
     float  *virtualSrcVec=NULL, *receiverMat=NULL;
     int *xcorrMat=NULL;
-    int nSamplesArg, nRecsArg, nLagsArg;
+    int nSamples, nRecs, nLags;
+
    
-    if (!PyArg_ParseTuple(args,"OiOiOi", &virtualSrcArg, &nSamplesArg, &receiverArg, &nRecsArg, &xcorrArg, &nLagsArg)) return NULL;
+    if (!PyArg_ParseTuple(args,"OiOiOi", &virtualSrcArg, &nSamples, &receiverArg, &nRecs, &xcorrArg, &nLags)) return NULL;
     
     virtualSrcVec = (float *)PyArray_GETPTR1(virtualSrcArg,0);
     if (virtualSrcVec == NULL) return NULL;
@@ -18,13 +19,14 @@ static PyObject* crosscorrs_func(PyObject* self, PyObject* args){
     xcorrMat = (int *)PyArray_GETPTR1(xcorrArg,0);
     if (xcorrMat == NULL) return NULL;
 
-    par_oneBitXCorr(virtualSrcVec, nSamples, receiverMat, nRecs, xcorrMat, nLags);
+    par_oneBitXcorr(virtualSrcVec, nSamples, receiverMat, nRecs, xcorrMat, nLags);
     
     Py_DECREF(virtualSrcVec);
     Py_DECREF(receiverMat);
     Py_DECREF(xcorrMat);
  
-    return 1;
+    int flag = 1;
+    return Py_BuildValue("i",flag);
 }
 
 static PyMethodDef CrosscorrsMethods[] = {
