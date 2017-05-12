@@ -22,18 +22,18 @@ void onePairOneBitXCorr(float *virtualSrcVec, float *aReceiver, int *xcorrOfPair
 
 	// for each lag, multiply and add to cross correlation for the corresponding tau value, then slide along
 	int sumWidth = nSamples - 2*nLags;
-	for(int i=-1*nLags; i<=nLags; ++i){
+	for(int i=-nLags; i<=nLags; ++i){
 		int startSample = i + nLags;
 		int endSamples = startSample + sumWidth;
-		xcorrOfPair[i] = 0; 
+		xcorrOfPair[startSample] = 0; 
 		for(int j=0; j<sumWidth; ++j){
-			xcorrOfPair[i] += int(vs[startSample+j]*r[nLags+j]);			
+			xcorrOfPair[startSample] += int(vs[startSample+j]*r[nLags+j]);			
 		}
 	}
 }
 
 
-void par_oneBitXcorr(float *virtualSrcVec, int nSamples, float *receiverMat, int nRecs, int *xcorrMat, int nLags){
+int par_oneBitXcorr(float *virtualSrcVec, int nSamples, float *receiverMat, int nRecs, int *xcorrMat, int nLags){
 	// xCorrMat should be preallocated as nRecs x nLags 
 	// slow dimension of receiverMat shoudl be nRecs long and fast dimension nSamples
 	// virtualSrcVec shoudl be 1+2*nSamples long
@@ -41,4 +41,5 @@ void par_oneBitXcorr(float *virtualSrcVec, int nSamples, float *receiverMat, int
 	// do the correlations of the one bit thresholded data
 	tbb::parallel_for( size_t(1), size_t(nRecs+1), size_t(1), [=](size_t i){onePairOneBitXCorr(&virtualSrcVec[0], &receiverMat[i*nSamples], &xcorrMat[i*nLags], nSamples, nLags);});
 
+	return 1;
 }

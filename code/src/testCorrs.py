@@ -34,6 +34,9 @@ nSamples = longFct2.size
 nLags = 1
 nRecs = 1
 xcorr = np.zeros(2*nLags+1)
-#flag = crosscorr_module.crosscorr_func(longFct2, nSamples, shortFct2, nRecs, xcorr, nLags)
-#print('flag '+str(flag))
-#print('xcorr '+str(xcorr))
+print('xcorr '+str(xcorr))
+flag = crosscorr_module.crosscorr_func(longFct2, nSamples, shortFct2, nRecs, xcorr, nLags)
+print('flag '+str(flag))
+print('xcorr '+str(xcorr))
+print('longFct '+str(longFct2))
+print('shortFct '+str(shortFct2))
