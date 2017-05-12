@@ -1,6 +1,6 @@
 import numpy as np
 import corrs_module
-import crosscorr_module
+#import crosscorr_module
 
 longFct = np.array([0,1.5,2,3,0.4],dtype=np.float32)
 shortFct = np.array([2,3,3,2.5,0.1],dtype=np.float32)
@@ -32,7 +32,8 @@ longFct2 = np.array([0,1.5,2,3,0.4],dtype=np.float32)
 shortFct2 = np.array([2,3,3,2.5,0.1],dtype=np.float32)
 nSamples = longFct2.size
 nLags = 1
+nRecs = 1
 xcorr = np.zeros(2*nLags+1)
-flag = crosscorr_module.crosscorrs_func(longFct2, nSamples, shortFct2, 1, xcorr, nLags)
-print('flag '+str(flag))
-print('xcorr '+str(xcorr))
+#flag = crosscorr_module.crosscorr_func(longFct2, nSamples, shortFct2, nRecs, xcorr, nLags)
+#print('flag '+str(flag))
+#print('xcorr '+str(xcorr))

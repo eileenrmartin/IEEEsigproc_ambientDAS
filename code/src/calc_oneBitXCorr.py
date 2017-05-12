@@ -88,9 +88,9 @@ currentWindowEndTime = currentWindowStartTime + windowLength
 outfileList = []
 
 # load the estimator 
-from sklearn.externals import joblib
-clusterFileName = 'kmeans.pkl' # or 'aggloCluster.pkl'
-estimator = joblib.load(clusterFileName) # ******************************
+# from sklearn.externals import joblib
+# clusterFileName = 'kmeans.pkl' # or 'aggloCluster.pkl'
+# estimator = joblib.load(clusterFileName) # ******************************
 # **********uncomment estimator = .... as soon as that file is added to git repo ******
 
 # for each time window, do the cross correlation and write its xcorr to a file

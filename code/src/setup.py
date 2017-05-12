@@ -1,8 +1,9 @@
 from distutils.core import setup, Extension
-#import numpy
+
 
 corrs_module = Extension('corrs_module', sources=['corrs_module.cpp'])
-crosscorr_module = Extension('crosscorr_module', include_dirs = ['/usr/local/tbb/include'], libraries = ['tbb'], library_dirs = ['/usr/local/tbb'], sources=['crosscorr_module.cpp'])
+crosscorr_module = Extension('crosscorr_module', include_dirs = ['/usr/local/tbb/include'], library_dirs = ['/usr/local/tbb'], sources=['crosscorr_module.cpp'])
+
 
 import os
 os.environ["CC"] = "gcc"

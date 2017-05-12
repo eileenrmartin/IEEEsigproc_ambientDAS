@@ -37,10 +37,10 @@ static PyObject* corrs_func(PyObject* self, PyObject* args){
     shortTermFct = (float *)PyArray_GETPTR1(shortTermArg,0);
     if (shortTermFct == NULL) return NULL;
 
-    c = _correlationCoeff(longTermFct,shortTermFct,nSamplesArg);
+    c = 10; //_correlationCoeff(longTermFct,shortTermFct,nSamplesArg);
     
-    Py_DECREF(longTermFct);
-    Py_DECREF(shortTermFct);
+    //Py_DECREF(longTermFct);
+    //Py_DECREF(shortTermFct);
  
     return Py_BuildValue("d", c);
 }
