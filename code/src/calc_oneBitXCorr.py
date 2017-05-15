@@ -6,7 +6,7 @@ import struct
 import obspy
 import sys
 from reader import readTrace
-#import corrs
+import crosscorr_module
 import cwt
 
 #sys.path.append('/home/ermartin/PassiveSeismicArray')
@@ -21,29 +21,30 @@ nTxtFileHeader = 3200
 nBinFileHeader = 400
 nTraceHeader = 240
 
-#cdef extern from "xcorrmodule.h":
-#	cdef cppclass 
         
-def crossCorrOneBit(virtualSrcTrace, allOtherReceiversTraces, nLagSamples, version = 'python'): #'C'):
+def crossCorrOneBit(virtualSrcTrace, allOtherReceiversTraces, nLagSamples, version = 'C'):
     '''version = C or python where that determines which language is used for correlation calculation'''
-    #if(version == 'C'):
-    #xCorr = corrs*********
-    #xCorr = corrs.oneBitXCorr(virtualSrcTrace, allOtherReceiversTraces, nLagSamples)
-    #else:
-    numberChannels = allOtherReceiversTraces.shape[0]
-    nt = allOtherReceiversTraces.shape[1]
     xCorr = np.empty((numberChannels,1+2*nLagSamples),dtype=np.int32)
-    sumWidth = nt-2*nLagSamples
-    for i in range(-1*nLagSamples,nLagSamples+1):
-        startSample = i + nLagSamples
-        endSample = startSample + sumWidth
-        tempArray = virtualSrcTrace[startSample:endSample]*allOtherReceiversTraces[:,nLagSamples:nLagSamples+sumWidth]
-        xCorr[:,i+nLagSamples] = np.sum(tempArray,axis=1)
+    if(version == 'C'):
+	nSamples = virtualSrcTrace.size
+	# next line should overwrite xCorr entries with one bit cross-correlations
+    	flag = crosscorr_module.crosscorr_func(virtualSrcTrace, nSamples, allOtherReceiversTraces, numberChannels, xCorr, nLagSamples)
+    else:
+    	numberChannels = allOtherReceiversTraces.shape[0]
+    	nt = allOtherReceiversTraces.shape[1]
+    	sumWidth = nt-2*nLagSamples
+    	for i in range(-1*nLagSamples,nLagSamples+1):
+    	    startSample = i + nLagSamples
+    	    endSample = startSample + sumWidth
+    	    tempArray = virtualSrcTrace[startSample:endSample]*allOtherReceiversTraces[:,nLagSamples:nLagSamples+sumWidth]
+    	    xCorr[:,i+nLagSamples] = np.sum(tempArray,axis=1)
     return xCorr
 
 
 # naming convention for input files
-parts=['/data/biondo/DAS/','year4','/','month','/','day','/cbt_processed_','year4','month','day','_','hour24start0','minute','second','.','millisecond','+0000.sgy']
+# if working directly on cees-mazama, cees-tool-7/8 use '/data/biondo/DAS/' as first entry of parts
+# if working with '/data/biondo/DAS/' mounted to '/data/', just use '/data/' as first entry of parts
+parts=['/data/','year4','/','month','/','day','/cbt_processed_','year4','month','day','_','hour24start0','minute','second','.','millisecond','+0000.sgy']
 
 srcFile = open(srcChList,'r')
 srcChannelsStrings = srcFile.readlines()
@@ -139,11 +140,8 @@ while currentWindowEndTime < endTime:
         thisTrace.filter('bandpass',freqmin=minFrq,freqmax=maxFrq,corners=4,zerophase=True)
         dataRate[ch-startCh,:] = thisTrace.data
 
-    # get rid of laser drift, then do one bit simplification
+    # get rid of laser drift,
     dataRate = dataRate - np.median(dataRate,axis=0)
-#     dataRate[dataRate >= 0] = 1
-#     dataRate[dataRate <= 0] = -1
-#     dataRate = dataRate.astype(np.int32)
 
     # compute cwt scales
     nf = 25
@@ -185,7 +183,7 @@ while currentWindowEndTime < endTime:
     nLagSamples = int(xCorrMaxTimeLagSeconds*samplesPerSecond)
     for ch in srcChannels:
         virtualSrcTrace = dataRate[ch-startCh,:]
-        xcorr =  crossCorrOneBit(virtualSrcTrace, dataRate, nLagSamples)
+        xcorr =  crossCorrOneBit(virtualSrcTrace, dataRate, nLagSamples, 'C')
         # write the output to a file
         outfileName = outfilePath + 'xcorr_srcCh_'+str(ch)+'_starting_'+str(currentWindowStartTime)
         outfileName = outfileName.replace(" ","_") # don't have a space in the middle of the name

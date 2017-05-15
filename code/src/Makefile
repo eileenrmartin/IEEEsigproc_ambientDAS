@@ -5,10 +5,10 @@ pythonCPPInterfaces:
 	python setup.py build_ext --inplace
 
 oneBitXCorr%:
-	python calc_oneBitXCorr.py ${myPathToCode}/src/params/params%
+	python calc_oneBitXCorr.py ${myPathToCode}/src/params/params$*
 
 plotOneBitXCorr%:
-	python plot_oneBitXCorr.py ${myPathToCode}/src/params/params%
+	python plot_oneBitXCorr.py ${myPathToCode}/src/params/params$*
 
 
 plotOneBitXCorrs%:
