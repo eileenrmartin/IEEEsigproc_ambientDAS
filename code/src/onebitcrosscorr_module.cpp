@@ -7,7 +7,7 @@
 
 
 
-static PyObject* crosscorr_func(PyObject* self, PyObject* args){
+static PyObject* onebitcrosscorr_func(PyObject* self, PyObject* args){
     PyObject  *virtualSrcArg=NULL, *receiverArg=NULL, *xcorrArg=NULL;
     float  *virtualSrcVec=NULL, *receiverMat=NULL;
     int *xcorrMat=NULL;
@@ -32,15 +32,15 @@ static PyObject* crosscorr_func(PyObject* self, PyObject* args){
     return Py_BuildValue("i",flag);
 }
 
-static PyMethodDef CrosscorrMethods[] = {
-	{"crosscorr_func", crosscorr_func, METH_VARARGS, "Calculate the crosscorrelation of two time series"},
+static PyMethodDef OnebitcrosscorrMethods[] = {
+	{"onebitcrosscorr_func", onebitcrosscorr_func, METH_VARARGS, "Calculate the crosscorrelation of two time series after one bit threshold"},
 	{NULL,NULL,0,NULL}
 
 };
 
 PyMODINIT_FUNC
-initcrosscorr_module(void){
-	(void) Py_InitModule("crosscorr_module",CrosscorrMethods);
+initonebitcrosscorr_module(void){
+	(void) Py_InitModule("onebitcrosscorr_module",OnebitcrosscorrMethods);
 	import_array();
 }
 

@@ -4,6 +4,10 @@ myPathToCode = /home/ermartin/StanfordDASArray/IEEEsigproc_ambientDAS/code
 pythonCPPInterfaces:
 	python setup.py build_ext --inplace
 
+testMods:	
+	make pythonCPPInterfaces
+	python testCorrs.py
+
 oneBitXCorr%:
 	python calc_oneBitXCorr.py ${myPathToCode}/src/params/params$*
 
@@ -12,7 +16,8 @@ plotOneBitXCorr%:
 
 
 plotOneBitXCorrs%:
-	python plot_oneBitXCorrs_multi_file_lists.py ${myPathToCode}/src/params/params%plot rasterTestPlot
+	python plot_oneBitXCorrs_multi_file_lists.py ${myPathToCode}/src/params/params$*plot rasterTestPlot
 
-
+clean:
+	rm *.so
 

@@ -6,7 +6,7 @@ import struct
 import obspy
 import sys
 from reader import readTrace
-import crosscorr_module
+import onebitcrosscorr_module
 import cwt
 
 #sys.path.append('/home/ermartin/PassiveSeismicArray')
@@ -28,7 +28,7 @@ def crossCorrOneBit(virtualSrcTrace, allOtherReceiversTraces, nLagSamples, versi
     if(version == 'C'):
 	nSamples = virtualSrcTrace.size
 	# next line should overwrite xCorr entries with one bit cross-correlations
-    	flag = crosscorr_module.crosscorr_func(virtualSrcTrace, nSamples, allOtherReceiversTraces, numberChannels, xCorr, nLagSamples)
+    	flag = onebitcrosscorr_module.onebitcrosscorr_func(virtualSrcTrace, nSamples, allOtherReceiversTraces, numberChannels, xCorr, nLagSamples)
     else:
     	numberChannels = allOtherReceiversTraces.shape[0]
     	nt = allOtherReceiversTraces.shape[1]
@@ -57,14 +57,8 @@ regFileSets = []
 fileList = []
 for idx,startTime in enumerate(startTimes):
     nFiles = nFiless[idx]
-    startYr = startTime.year
-    startMo = startTime.month
-    startDay = startTime.day
-    startHr = startTime.hour
-    startMin = startTime.minute
-    startSec = startTime.second
     startMil = int(0.001*startTime.microsecond)
-    regFileSets.append(rfs.regularFileSet(parts,startYr,startMo,startDay,startHr,startMin,startSec,startMil,secondsPerFile,nFiles))
+    regFileSets.append(rfs.regularFileSet(parts,startTime.year,startTime.month,startTime.day,startTime.hour,startTime.minute,startTime.second,startMil,secondsPerFile,nFiles))
     endTime = startTime + dt.timedelta(seconds=secondsPerFile*nFiles-1) # last time in last file
     tempFileList = regFileSets[-1].getFileNamesInRange(startTime,endTime)
     for f in tempFileList:
@@ -163,7 +157,8 @@ while currentWindowEndTime < endTime:
         cwtScales[:,index,nf:] = cwt.cwt(channel, delta, scales, wf, w0).T
 
     # padding to make my life easier
-    cwtScales[:,samplesPerWindow,:] = cwtScales[:,(samplesPerWindow - 1),:]
+    np.pad(cwtScales,((0,0),(0,1),(0,0)),'edge') # just add padding to the middle axis, and edge value fill in should perform the operation on the next line
+    #cwtScales[:,samplesPerWindow,:] = cwtScales[:,(samplesPerWindow - 1),:]
 
     # figure out which cluster the sample belongs to
     samplingRate = 25

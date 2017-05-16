@@ -3,16 +3,10 @@
 #include <vector>
 #include <iostream>
 
-void onePairOneBitXCorr(float *virtualSrcVec, float *aReceiver, int *xcorrOfPair, int nSamples, int nLags){
+void onePairOneBitXCorr(signed char *vs, float *aReceiver, int *xcorrOfPair, int nSamples, int nLags){
 	// create thresholded data (should do this outside if you're doing many virtual sources)
-	signed char vs [nSamples];
 	signed char r [nSamples];
 	for(int i=0; i<nSamples; ++i){
-		if(virtualSrcVec[i] >= 0){
-			vs[i] = (signed char)1;
-		} else{
-			vs[i] = (signed char)-1;
-		}
 		if(aReceiver[i] >= 0){
 			r[i] = (signed char)1;
 		} else{
@@ -36,8 +30,23 @@ int par_oneBitXcorr(float *virtualSrcVec, int nSamples, float *receiverMat, int 
 	// xCorrMat should be preallocated as nRecs x nLags 
 	// slow dimension of receiverMat shoudl be nRecs long and fast dimension nSamples
 	// virtualSrcVec shoudl be 1+2*nSamples long
+	
+	// one bit threshold the virtual source vector
+	signed char vs [nSamples];
+	for(int i=0; i<nSamples; ++i){
+		if(virtualSrcVec[i] >= 0){
+			vs[i] = (signed char)1;
+		} else{
+			vs[i] = (signed char)-1;
+		}
+	}
+	signed char *vsptr;
+	vsptr = vs;
 
-	// do the correlations of the one bit thresholded data
-	tbb::parallel_for( size_t(0), size_t(nRecs), size_t(1), [=](size_t i){onePairOneBitXCorr(&virtualSrcVec[0], &receiverMat[i*nSamples], &xcorrMat[i*(nLags*2+1)], nSamples, nLags);});
+	// do the correlations of the one bit thresholded data (do one bit thresholding of receiver data inside function call)
+	tbb::parallel_for( size_t(0), size_t(nRecs), size_t(1), [=](size_t i){onePairOneBitXCorr(vsptr, &receiverMat[i*nSamples], &xcorrMat[i*(nLags*2+1)], nSamples, nLags);});
+
 	return 1;
 }
+
+
