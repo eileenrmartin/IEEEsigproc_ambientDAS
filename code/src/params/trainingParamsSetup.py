@@ -74,7 +74,7 @@ for day in days:
 	if(len(nFilesPerJob) > 0):
 		# make the folder and open up the file to write to
 		returnflag = subprocess.call(["mkdir","trainingparams"+str(jobCounter)])
-		paramsFileName = "params"+str(jobCounter)+"/params.py"
+		paramsFileName = "trainingparams"+str(jobCounter)+"/params.py"
 		paramsFile = open(paramsFileName,'w')
 		# start writing the file
 		paramsFile.write('import datetime as dt \n')

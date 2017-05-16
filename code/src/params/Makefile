@@ -1,5 +1,12 @@
-params:
+xcorrParams:
 	python paramsSetup.py
+
+trainingParams:
+	python trainingParamsSetup.py
+
+all:
+	make xcorrParams
+	make trainingParams
 
 clean:
 	rm -rf params1*
@@ -11,3 +18,4 @@ clean:
 	rm -rf params7*
 	rm -rf params8*
 	rm -rf params9*
+	rm -rf trainingparams*
