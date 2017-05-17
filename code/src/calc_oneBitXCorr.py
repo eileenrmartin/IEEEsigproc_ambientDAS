@@ -17,6 +17,10 @@ from params import *
 import fileSet as fs
 import regularFileSet as rfs
 
+filteredFlag = sys.argv[2]
+if((filteredFlag != 'baseline') and (filteredFlag != 'filtered')):
+	print("ERROR: sys.argv[2] must be baseline or filtered")
+
 nTxtFileHeader = 3200
 nBinFileHeader = 400
 nTraceHeader = 240
@@ -24,19 +28,24 @@ nTraceHeader = 240
         
 def crossCorrOneBit(virtualSrcTrace, allOtherReceiversTraces, nLagSamples, version = 'C'):
     '''version = C or python where that determines which language is used for correlation calculation'''
+    numberChannels = allOtherReceiversTraces.shape[0]
     xCorr = np.empty((numberChannels,1+2*nLagSamples),dtype=np.int32)
     if(version == 'C'):
 	nSamples = virtualSrcTrace.size
 	# next line should overwrite xCorr entries with one bit cross-correlations
     	flag = onebitcrosscorr_module.onebitcrosscorr_func(virtualSrcTrace, nSamples, allOtherReceiversTraces, numberChannels, xCorr, nLagSamples)
-    else:
-    	numberChannels = allOtherReceiversTraces.shape[0]
+    else: # just do the one bit correlation in 
     	nt = allOtherReceiversTraces.shape[1]
     	sumWidth = nt-2*nLagSamples
+	# do +- 1 bit thresholding
+	vsOneBit = np.ones_like(virtualSrcTrace)
+	# ****do threhsolding***
+	recsOneBit = np.ones_like(allOtherReceiversTraces)
+	# ****do thresholding
     	for i in range(-1*nLagSamples,nLagSamples+1):
     	    startSample = i + nLagSamples
     	    endSample = startSample + sumWidth
-    	    tempArray = virtualSrcTrace[startSample:endSample]*allOtherReceiversTraces[:,nLagSamples:nLagSamples+sumWidth]
+    	    tempArray = vsOneBit[startSample:endSample]*recsOneBit[:,nLagSamples:nLagSamples+sumWidth]
     	    xCorr[:,i+nLagSamples] = np.sum(tempArray,axis=1)
     return xCorr
 
@@ -82,15 +91,28 @@ currentWindowEndTime = currentWindowStartTime + windowLength
 
 outfileList = []
 
-# load the estimator 
-# from sklearn.externals import joblib
-# clusterFileName = 'kmeans.pkl' # or 'aggloCluster.pkl'
-# estimator = joblib.load(clusterFileName) # ******************************
+# set up the output, one cross correlation per virtual source receiver pair per hour
+overallStartTimeForThisJob = min(startTimes)
+firstHr = dt.datetime(overallStartTimeForThisJob.year, overallStartTimeForThisJob.month, overallStartTimeForThisJob.day, overallStartTimeForThisJob.hour,0,0,0) 
+overallEndTimeForThisJob = endTime # assume lists within job parameters were put in in order ***shoudl generalize***
+lastIncludedHr = dt.datetime(overallEndTimeForThisJob.year, overallEndTimeForThisJob.month, overallEndTimeForThisJob.day, overallEndTimeForThisJob.hour,0,0,0)
+nHrs = 1+int((lastIncludedHr-firstHr).total_seconds())/3600 # number of hours output with correlations
+nLagSamples = int(xCorrMaxTimeLagSeconds*samplesPerSecond)
+nLagSamplesTotal = 2*nLagSamples+1 # number of cross correlation lags 
+outputCorrelations = np.zeros((nHrs,len(srcChannels),nChannels,nLagSamplesTotal),dtype=np.float32)
+nWindowsPerCorrelation = np.zeros(nHrs) # each hour will have a counter indicating how many windows contributed to its avg correlation
+
+if(filteredFlag == 'filtered'):
+    # load the estimator 
+    from sklearn.externals import joblib
+    clusterFileName = 'kmeans.pkl' # or 'aggloCluster.pkl'
+    estimator = joblib.load(clusterFileName) # ******************************
 # **********uncomment estimator = .... as soon as that file is added to git repo ******
 
 # for each time window, do the cross correlation and write its xcorr to a file
 while currentWindowEndTime < endTime:
 
+    # figure out start time in case there was a jump
     thisWindowsFileSet = []
     for i,regFileSet in enumerate(regFileSets):
         thisWindowsFileSet= regFileSet.getFileNamesInRange(currentWindowStartTime,currentWindowEndTime)
@@ -100,6 +122,9 @@ while currentWindowEndTime < endTime:
             break
     print(currentWindowStartTime)
 
+    # figure out which hour this window is assigned to
+    thisHrIdx = int((currentWindowStartTime-overallStartTimeForThisJob).total_seconds()/3600)
+    nWindowsPerCorrelation[thisHrIdx] = nWindowsPerCorrelation[thisHrIdx] + 1
 
     data = np.zeros((nChannels,samplesPerWindow))
     startIdx = 0
@@ -137,53 +162,50 @@ while currentWindowEndTime < endTime:
     # get rid of laser drift,
     dataRate = dataRate - np.median(dataRate,axis=0)
 
-    # compute cwt scales
-    nf = 25
-    delta = 1.0 / float(samplesPerSecond)
-    # compute cwt over time
-    f = np.logspace(np.log10(minFrq), np.log10(maxFrq), nf)
-    wf = 'morlet'
-    w0 = 8
-    scales = cwt.scales_from_fourier(f, wf, w0)
-    cwtScales = np.empty((nChannels, samplesPerWindow, nf * 2), dtype='complex128')
-    for index, trace in enumerate(dataRate):
-        cwtScales[index,:(samplesPerWindow - 1),:nf] = cwt.cwt(trace, delta, scales, wf, w0).T
-    # compute cwt over space
-    minSpaceFrq = 0.5
-    maxSpaceFrq = 50 
-    f = np.logspace(np.log10(minSpaceFrq), np.log10(maxSpaceFrq), nf)
-    scales = cwt.scales_from_fourier(f, wf, w0)
-    for index, channel in enumerate(dataRate.T):
-        cwtScales[:,index,nf:] = cwt.cwt(channel, delta, scales, wf, w0).T
+    # get rid of cars if you're filtering them out
+    if(filteredFlag == 'filtered'):
+        # compute cwt scales
+        nf = 25
+        delta = 1.0 / float(samplesPerSecond)
+        # compute cwt over time
+        f = np.logspace(np.log10(minFrq), np.log10(maxFrq), nf)
+        wf = 'morlet'
+        w0 = 8
+        scales = cwt.scales_from_fourier(f, wf, w0)
+        cwtScales = np.empty((nChannels, samplesPerWindow, nf * 2), dtype='complex128')
+        for index, trace in enumerate(dataRate):
+            cwtScales[index,:(samplesPerWindow - 1),:nf] = cwt.cwt(trace, delta, scales, wf, w0).T
+        # compute cwt over space
+        minSpaceFrq = 0.5
+        maxSpaceFrq = 50 
+        f = np.logspace(np.log10(minSpaceFrq), np.log10(maxSpaceFrq), nf)
+        scales = cwt.scales_from_fourier(f, wf, w0)
+        for index, channel in enumerate(dataRate.T):
+            cwtScales[:,index,nf:] = cwt.cwt(channel, delta, scales, wf, w0).T
 
-    # padding to make my life easier
-    np.pad(cwtScales,((0,0),(0,1),(0,0)),'edge') # just add padding to the middle axis, and edge value fill in should perform the operation on the next line
-    #cwtScales[:,samplesPerWindow,:] = cwtScales[:,(samplesPerWindow - 1),:]
+        # padding to make my life easier
+        np.pad(cwtScales,((0,0),(0,1),(0,0)),'edge') # just add padding to the middle axis, and edge value fill in should perform the operation on the next line
+        #cwtScales[:,samplesPerWindow,:] = cwtScales[:,(samplesPerWindow - 1),:]
 
-    # figure out which cluster the sample belongs to
-    samplingRate = 25
-    nSubSamples = int(samplesPerWindow / samplingRate)
-    features = np.mean(np.reshape(np.abs(cwtScales), (nChannels, nSubSamples, samplingRate, nf * 2)), axis=2)
-    labels = estimator.predict(scale(np.reshape(features, (nChannels * nSubSamples, -1)), copy=False))
-    labels = np.reshape(labels, (nChannels, -1))
+        # figure out which cluster the sample belongs to
+        samplingRate = 25
+        nSubSamples = int(samplesPerWindow / samplingRate)
+        features = np.mean(np.reshape(np.abs(cwtScales), (nChannels, nSubSamples, samplingRate, nf * 2)), axis=2)
+        labels = estimator.predict(scale(np.reshape(features, (nChannels * nSubSamples, -1)), copy=False))
+        labels = np.reshape(labels, (nChannels, -1))
     
-    # mute out the coefficients 
-    # TODO : check which cluster number corresponds to the cars after training
+        # mute out the coefficients 
+        # TODO : check which cluster number corresponds to the cars after training
 
-    # apply inverse cwt to reconstruct the signal
-    for index in range(samplesPerWindow):
-        dataRate[:,index] = cwt.icwt(cwtScales[:,index,nf:].T, delta, scales, wf, w0)
+        # apply inverse cwt to reconstruct the signal
+        for index in range(samplesPerWindow-1):  # **** changed this to samplesPerWindow-1 since dataRate is 1 shorter than data
+            dataRate[:,index] = cwt.icwt(cwtScales[:,index,nf:].T, delta, scales, wf, w0)
 
     # do the cross-correlations and save them
-    nLagSamples = int(xCorrMaxTimeLagSeconds*samplesPerSecond)
-    for ch in srcChannels:
+    for idxchannel,ch in enumerate(srcChannels):
         virtualSrcTrace = dataRate[ch-startCh,:]
-        xcorr =  crossCorrOneBit(virtualSrcTrace, dataRate, nLagSamples, 'C')
-        # write the output to a file
-        outfileName = outfilePath + 'xcorr_srcCh_'+str(ch)+'_starting_'+str(currentWindowStartTime)
-        outfileName = outfileName.replace(" ","_") # don't have a space in the middle of the name
-        np.savez(outfileName,xcorr)
-        outfileList.append(outfileName)
+        xcorr =  crossCorrOneBit(virtualSrcTrace, dataRate, nLagSamples, 'C') # do the cross correlation
+	outputCorrelations[thisHrIdx,idxchannel,:,:] = outputCorrelations[thisHrIdx,idxchannel,:,:] + xcorr.astype(np.float32)
    
     # move on to the next time step
     currentWindowStartTime = currentWindowStartTime + windowOffset
@@ -191,8 +213,42 @@ while currentWindowEndTime < endTime:
 
 
 
+
+# normalize/average each hour's correlations by the number of windows contributing to it
+for hr in range(nHrs):
+    if(nWindowsPerCorrelation[hr] > 0): 
+        outputCorrelations[hr,:,:,:] = outputCorrelations[hr,:,:,:] / float(nWindowsPerCorrelation[hr])
+
+###### output ######
+outfileName = outfilePath + 'xcorr_starting_'+str(firstHr)+'_'+filteredFlag
+outfileName = outfileName.replace(" ","_")
+outfileList.append(outfileName)
+
+# write the output correlation metadata
+outfileHeaderName = outfileName+'_headers.txt'
+outfile = open(outfileHeaderName,'w')
+outfile.write('dimensions (slow,mid,mid,fast) : hour \t source channel (index within selected source channels) \t receiver channel (index within selected receiver channels) \t time lag of correlation \n')
+outfile.write('dimensions (slow,mid,mid,fast) : '+str(nHrs)+'\t'+str(len(srcChannels))+'\t'+str(nChannels)+'\t'+str(nLagSamplesTotal)+'\n')
+outfile.write('first hour starts at time : '+str(firstHr)+'\n')
+outfile.write('number of hours : '+str(nHrs)+'\n')
+outfile.write('number of virtual source channels: '+str(len(srcChannels))+'\n')
+outfile.write('virtual source channels, indices within full data set : \n')
+for ch in srcChannels:
+    outfile.write(str(ch)+'\n')
+outfile.write('number of receiver channels : '+str(nChannels)+'\n')
+outfile.write('minimum receiver channel : '+str(startCh)+'\n')
+outfile.write('maximum receiver channel : '+str(endCh)+'\n')
+outfile.write('number of time lags total (including -,0,+) : '+str(nLagSamplesTotal)+'\n')
+outfile.write('minimum correlation time lag (seconds): '+str(-xCorrMaxTimeLagSeconds)+'\n')
+outfile.write('maximum correlation time lag (seconds): '+str(xCorrMaxTimeLagSeconds)+'\n')
+outfile.close()
+
+# write the output correlation data
+outfileDataName = outfileName+'_data' # will end in .npz
+np.savez(outfileDataName,outputCorrelations)
+
 # write the list of output file names
-outFile = open(outfileListFile,'w')
+outFile = open(outfileListFile+'_'+filteredFlag+'.txt','w')
 for filename in outfileList:
     outFile.write(filename+'\n')
 outFile.close()

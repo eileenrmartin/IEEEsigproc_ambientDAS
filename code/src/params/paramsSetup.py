@@ -99,7 +99,7 @@ for day in days:
 		paramsFile.write(nFilesString+'] \n')
 		# other info about where to get and write intermediate results, which channels to use and which frequency bands to use
 		paramsFile.write("outfilePath = '"+outfilePath+"'\n")
-		paramsFile.write("outfileListFile = '"+outfileListFileStart+str(jobCounter)+".txt'\n")
+		paramsFile.write("outfileListFile = '"+outfileListFileStart+str(jobCounter)+"'\n")
 		paramsFile.write("srcChList = '"+srcChList+"'\n")
 		paramsFile.write("startCh = "+str(startCh)+"\n")
 		paramsFile.write("endCh = "+str(endCh)+"\n")

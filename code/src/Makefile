@@ -9,7 +9,10 @@ testMods:
 	python testCorrs.py
 
 oneBitXCorr%:
-	python calc_oneBitXCorr.py ${myPathToCode}/src/params/params$*
+	python calc_oneBitXCorr.py ${myPathToCode}/src/params/params$* baseline
+
+filteredOneBitXCorr%:
+	python calc_oneBitXCorr.py ${myPathToCode}/src/params/params$* filtered
 
 plotOneBitXCorr%:
 	python plot_oneBitXCorr.py ${myPathToCode}/src/params/params$*
