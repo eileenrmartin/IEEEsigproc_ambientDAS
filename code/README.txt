@@ -47,7 +47,7 @@ Type exit when you're done looking around in there.
 6. sftp test-img.img into /data/biondo/ermartin folder on cees-mazama
 
 7. now interact with the container through a shell (/data/biondo/DAS is a path on cees-mazama and /data is a directory that is made in the Dockerfile):
-singularity shell -B /data/biondo/DAS:/data /data/biondo/ermartin/test-img.img
+singularity shell -B /data/biondo/DAS:/data -B /scratch/ermartin:/scratch /data/biondo/ermartin/test-img.img
 
 8. for some reason the environment variables only get set properly to use the tbb library if you switch to bash, so just type bash after you get into the singularity image (also nice that it lets you do tab completion and up arrow for old commands) 
 
