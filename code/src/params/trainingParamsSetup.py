@@ -14,7 +14,7 @@ endCh = 300
 minFrq = 0.2
 maxFrq = 24.0
 outfilePath = '/scratch/'
-outfileListFileStart = 'inter_results/outfileList'
+outfileListFileStart = 'inter_results/trainingOutfileList'
 srcChList = 'sourceList.txt'
 
 # keep these file sets in order
