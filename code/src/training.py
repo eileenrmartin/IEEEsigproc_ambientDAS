@@ -30,16 +30,15 @@ for day in range(1, ndays + 1):
   f = open(fileListName,'r')
   fileList = f.readlines()
   dayFiles = [(file.strip('\n')) for file in fileList]
-  files.append(dayFiles)
+  files.extend(dayFiles)
   f.close()
 
 nfiles = len(files)
 
 trainingData = np.empty((nChannels, nSamples * nfiles, nf * 2), dtype=np.float64)
 
-outfilePathtmp = '/data/biondo/fantine/das/scratch2/'
 for index, file in enumerate(files):
-  file = outfilePathtmp + file
+  file = outfilePath + file
   trainingData[:,(index * nSamples):((index + 1) * nSamples),:] = np.load(file)
 
 # Clustering
