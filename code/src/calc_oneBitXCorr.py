@@ -200,10 +200,6 @@ while currentWindowEndTime < endTime:
     for idxchannel,ch in enumerate(srcChannels):
         virtualSrcTrace = dataRate[ch-startCh,:]
         xcorr =  crossCorrOneBit(virtualSrcTrace, dataRate, nLagSamples, 'C') # do the cross correlation
-	print('outputCorr slice shape')
-	print(outputCorrelations[thisHrIdx,idxchannel,:,:].shape)
-	print('xcorr shape')
-	print(xcorr.shape)
 	outputCorrelations[thisHrIdx,idxchannel,:,:] = outputCorrelations[thisHrIdx,idxchannel,:,:] + xcorr.astype(np.float32)
 
 
