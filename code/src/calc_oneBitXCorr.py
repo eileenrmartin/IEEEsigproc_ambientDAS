@@ -96,7 +96,7 @@ overallStartTimeForThisJob = min(startTimes)
 firstHr = dt.datetime(overallStartTimeForThisJob.year, overallStartTimeForThisJob.month, overallStartTimeForThisJob.day, overallStartTimeForThisJob.hour,0,0,0) 
 overallEndTimeForThisJob = endTime # assume lists within job parameters were put in in order ***shoudl generalize***
 lastIncludedHr = dt.datetime(overallEndTimeForThisJob.year, overallEndTimeForThisJob.month, overallEndTimeForThisJob.day, overallEndTimeForThisJob.hour,0,0,0)
-nHrs = 1+int((lastIncludedHr-firstHr).total_seconds())/3600 # number of hours output with correlations
+nHrs = int((lastIncludedHr-firstHr).total_seconds())/3600 # number of hours output with correlations
 nLagSamples = int(xCorrMaxTimeLagSeconds*samplesPerSecond)
 nLagSamplesTotal = 2*nLagSamples+1 # number of cross correlation lags 
 outputCorrelations = np.zeros((nHrs,len(srcChannels),nChannels,nLagSamplesTotal),dtype=np.float32)
@@ -105,31 +105,26 @@ nWindowsPerCorrelation = np.zeros(nHrs) # each hour will have a counter indicati
 if(filteredFlag == 'filtered'):
     # load the estimator 
     from sklearn.externals import joblib
-    clusterFileName = 'kmeans.pkl' # or 'aggloCluster.pkl'
-    estimator = joblib.load(clusterFileName) # ******************************
-# **********uncomment estimator = .... as soon as that file is added to git repo ******
+    clusterFileName = '/mnt/kmeans.pkl' # or '/mnt/aggloCluster.pkl' # this is actually in /scratch/fantine/das on cees but I bind that to /mnt
+    estimator = joblib.load(clusterFileName) 
 
+
+regFileSetIdx = 0 # which regular file set in the list are you using now?
 # for each time window, do the cross correlation and write its xcorr to a file
 while currentWindowEndTime < endTime:
 
     # figure out start time in case there was a jump
-    thisWindowsFileSet = []
-    for i,regFileSet in enumerate(regFileSets):
-        thisWindowsFileSet= regFileSet.getFileNamesInRange(currentWindowStartTime,currentWindowEndTime)
-        if(len(thisWindowsFileSet) > 0):
-            currentWindowStartTime = regFileSet.getTimeFromFilename(thisWindowsFileSet[0]) 
-            currentWindowEndTime = currentWindowStartTime + windowLength
-            break
+    thisWindowsFileSet = regFileSets[regFileSetIdx].getFileNamesInRange(currentWindowStartTime,currentWindowEndTime)
     print(currentWindowStartTime)
 
     # figure out which hour this window is assigned to
     thisHrIdx = int((currentWindowStartTime-overallStartTimeForThisJob).total_seconds()/3600)
     nWindowsPerCorrelation[thisHrIdx] = nWindowsPerCorrelation[thisHrIdx] + 1
 
-    data = np.zeros((nChannels,samplesPerWindow))
+    data = np.zeros((nChannels,samplesPerWindow),dtype=np.float32)
     startIdx = 0
     for filename in thisWindowsFileSet: 
-        thisFileStartTime = regFileSet.getTimeFromFilename(filename)
+        thisFileStartTime = regFileSets[regFileSetIdx].getTimeFromFilename(filename)
         thisFileEndTime = thisFileStartTime + dt.timedelta(seconds=secondsPerFile)
         startIdxReading = 0 # start index to read in filename
         if currentWindowStartTime > thisFileStartTime:
@@ -205,10 +200,21 @@ while currentWindowEndTime < endTime:
     for idxchannel,ch in enumerate(srcChannels):
         virtualSrcTrace = dataRate[ch-startCh,:]
         xcorr =  crossCorrOneBit(virtualSrcTrace, dataRate, nLagSamples, 'C') # do the cross correlation
+	print('outputCorr slice shape')
+	print(outputCorrelations[thisHrIdx,idxchannel,:,:].shape)
+	print('xcorr shape')
+	print(xcorr.shape)
 	outputCorrelations[thisHrIdx,idxchannel,:,:] = outputCorrelations[thisHrIdx,idxchannel,:,:] + xcorr.astype(np.float32)
-   
+
+
+
     # move on to the next time step
-    currentWindowStartTime = currentWindowStartTime + windowOffset
+    lastWindowInFileSet = (thisWindowsFileSet[-1] == regFileSets[regFileSetIdx].nameOfLastFile())
+    if lastWindowInFileSet: # if moving on to the next file set
+	regFileSetIdx = regFileSetIdx + 1
+        currentWindowStartTime = startTimes[regFileSetIdx]
+    else: # if staying within the same file set, just march along
+        currentWindowStartTime = currentWindowStartTime + windowOffset
     currentWindowEndTime = currentWindowStartTime + windowLength
 
 
@@ -224,7 +230,7 @@ outfileName = outfilePath + 'xcorr_starting_'+str(firstHr)+'_'+filteredFlag
 outfileName = outfileName.replace(" ","_")
 outfileList.append(outfileName)
 
-# write the output correlation metadata
+# write the output correlation metadata  # #*********shoudl move this over to reader.py*****
 outfileHeaderName = outfileName+'_headers.txt'
 outfile = open(outfileHeaderName,'w')
 outfile.write('dimensions (slow,mid,mid,fast) : hour \t source channel (index within selected source channels) \t receiver channel (index within selected receiver channels) \t time lag of correlation \n')

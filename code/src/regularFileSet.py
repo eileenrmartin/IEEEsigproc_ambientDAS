@@ -14,6 +14,11 @@ class regularFileSet(fileSet):
 		if(self.nFiles == 0): # if number of files=-1 assume it goes until now
 			self.endTime = datetime.now()
 
+	def nameOfLastFile(self):
+		'''Return the name of the last file in this file set'''
+		startOfLastFileTime = self.endTime - datetime.timedelta(seconds=self.secondsBetweenFiles)
+		return self.generateFilenameDTObj(startOfLastFileTime)
+
 	def addFilesToEnd(self,nFilesToAdd=1):
 		'''Add a file to the end of the regularFileSet by adjusting the endTime and nFiles'''
 		self.nFiles = self.nFiles + nFilesToAdd

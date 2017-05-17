@@ -1,22 +1,3 @@
-Step 1: create a docker image, I'll name mine test-img
-docker build -t test-img .
-
-# ideally modify step 2 to mount the test data volume. For now it just copies a folder called testData
-# some modification of 
-# docker run -v /Users/eileenmartin/Documents/SEP/campus_DAS_microseismic/auto_noise_classification/IEEEsigproc_ambientDAS/testData:/CorrelationCode/testData -it test-img /bin/bash
-
-Step 2: run the docker with the data volume mounted (even if its just some test data)
-docker run -i -t test-img /bin/bash
-
-docker run -v /Users/eileenmartin/Documents/SEP/campus_DAS_microseismic/auto_noise_classification/IEEEsigproc_ambientDAS/testData:/home/CorrelationCode/testData -it test-img /bin/bash
-
-Cleanup:
-docker ps (will list container ID, image name etc...)
-docker stop my-container-ID-goes-here
-docker rm my-container-ID-goes-here
-
-
-
 ============================= WITH SINGULARITY ON CEES ======================
 (can do this on oas after logging in as su)
 1. on local computer create a docker image and run it as a container
@@ -47,7 +28,7 @@ Type exit when you're done looking around in there.
 6. sftp test-img.img into /data/biondo/ermartin folder on cees-mazama
 
 7. now interact with the container through a shell (/data/biondo/DAS is a path on cees-mazama and /data is a directory that is made in the Dockerfile):
-singularity shell -B /data/biondo/DAS:/data -B /scratch/ermartin:/scratch /data/biondo/ermartin/test-img.img
+singularity shell -B /data/biondo/DAS:/data -B /scratch/ermartin:/scratch -B /scratch/fantine/das:/mnt /data/biondo/ermartin/test-img.img
 
 8. for some reason the environment variables only get set properly to use the tbb library if you switch to bash, so just type bash after you get into the singularity image (also nice that it lets you do tab completion and up arrow for old commands) 
 

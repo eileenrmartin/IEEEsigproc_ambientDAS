@@ -26,7 +26,8 @@ void onePairOneBitXCorr(signed char *vs, float *aReceiver, int *xcorrOfPair, int
 }
 
 
-int par_oneBitXcorr(float *virtualSrcVec, int nSamples, float *receiverMat, int nRecs, int *xcorrMat, int nLags){
+int par_oneBitXcorr(float *virtualSrcVec, int nSamples, std::vector<float *>receiverStarts, int nRecs, std::vector<int *>xcorrStarts, int nLags){
+
 	// xCorrMat should be preallocated as nRecs x nLags 
 	// slow dimension of receiverMat shoudl be nRecs long and fast dimension nSamples
 	// virtualSrcVec shoudl be 1+2*nSamples long
@@ -44,7 +45,8 @@ int par_oneBitXcorr(float *virtualSrcVec, int nSamples, float *receiverMat, int 
 	vsptr = vs;
 
 	// do the correlations of the one bit thresholded data (do one bit thresholding of receiver data inside function call)
-	tbb::parallel_for( size_t(0), size_t(nRecs), size_t(1), [=](size_t i){onePairOneBitXCorr(vsptr, &receiverMat[i*nSamples], &xcorrMat[i*(nLags*2+1)], nSamples, nLags);});
+	tbb::parallel_for( size_t(0), size_t(nRecs), size_t(1), [=](size_t i){onePairOneBitXCorr(vsptr, receiverStarts[i], xcorrStarts[i], nSamples, nLags);});
+
 
 	return 1;
 }

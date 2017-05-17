@@ -24,14 +24,14 @@ print('shortFct '+str(shortFct))
 #correlation = np.zeros(nLags,dtype = np.int32)
 #flag = corrs.oneBitXCorr(longFct,shortFct,correlation)
 longFct2 = np.array([0,-1.5,2,3,0.4],dtype=np.float32)
-shortFct2 = np.array([2,3,3,2.5,0.1],dtype=np.float32)
+shortFct2 = np.array([[2,3,3,2.5,0.1],[2,3,-3,2.5,0.1]],dtype=np.float32)
 nSamples = longFct2.size
 nLags = 1
-nRecs = 1
-xcorr = np.zeros(2*nLags+1,dtype=np.int32)
+nRecs = 2
+xcorr = np.zeros((2,2*nLags+1),dtype=np.int32)
 
 flag = onebitcrosscorr_module.onebitcrosscorr_func(longFct2, nSamples, shortFct2, nRecs, xcorr, nLags)
 print('after calling onebitcrosscorr flag '+str(flag))
 print('xcorr '+str(xcorr))
-print('longFct '+str(longFct2))
-print('shortFct '+str(shortFct2))
+print('longFct2 '+str(longFct2))
+print('shortFct2 '+str(shortFct2))

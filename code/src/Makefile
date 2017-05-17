@@ -15,7 +15,7 @@ filteredOneBitXCorr%:
 	python calc_oneBitXCorr.py ${myPathToCode}/src/params/params$* filtered
 
 plotOneBitXCorr%:
-	python plot_oneBitXCorr.py ${myPathToCode}/src/params/params$*
+	python plot_oneBitXCorr.py ${myPathToCode}/src/params/params$* baseline
 
 
 plotOneBitXCorrs%:

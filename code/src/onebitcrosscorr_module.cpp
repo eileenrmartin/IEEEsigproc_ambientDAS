@@ -4,8 +4,8 @@
 #include "parallelized_correlations.hpp"
 #include "tbb/tbb.h"
 #include "tbb/parallel_for.h"
-
-
+#include <vector>
+#include <iostream>
 
 static PyObject* onebitcrosscorr_func(PyObject* self, PyObject* args){
     PyObject  *virtualSrcArg=NULL, *receiverArg=NULL, *xcorrArg=NULL;
@@ -18,16 +18,24 @@ static PyObject* onebitcrosscorr_func(PyObject* self, PyObject* args){
     
     virtualSrcVec = (float *)PyArray_GETPTR1(virtualSrcArg,0);
     if (virtualSrcVec == NULL) return NULL;
-    receiverMat = (float *)PyArray_GETPTR1(receiverArg,0);
+    receiverMat = (float *)PyArray_GETPTR2(receiverArg,0,0);
     if (receiverMat == NULL) return NULL;
-    xcorrMat = (int *)PyArray_GETPTR1(xcorrArg,0);
+    xcorrMat = (int *)PyArray_GETPTR2(xcorrArg,0,0);
     if (xcorrMat == NULL) return NULL;
-
-    int flag = par_oneBitXcorr(virtualSrcVec, nSamples, receiverMat, nRecs, xcorrMat, nLags);
+    std::vector<float *> recPtrs;
+    std::vector<int *> xcorrPtrs;
+    recPtrs.reserve(nRecs);
+    xcorrPtrs.reserve(nRecs);
+    for(int r=0; r<nRecs; ++r){
+        recPtrs.push_back((float *)PyArray_GETPTR2(receiverArg,r,0));
+        xcorrPtrs.push_back((int *)PyArray_GETPTR2(xcorrArg,r,0));	
+    }
+ 
+    int flag = par_oneBitXcorr(virtualSrcVec, nSamples, recPtrs, nRecs, xcorrPtrs,nLags);
     
-    //Py_DECREF(virtualSrcVec);
-    //Py_DECREF(receiverMat);
-    //Py_DECREF(xcorrMat);
+    //Py_DECREF(virtualSrcArg);
+    //Py_DECREF(receiverArg);
+    //Py_DECREF(xcorrArg);
  
     return Py_BuildValue("i",flag);
 }
