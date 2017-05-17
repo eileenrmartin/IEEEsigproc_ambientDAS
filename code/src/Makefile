@@ -20,6 +20,12 @@ plotOneBitXCorr%:
 
 plotOneBitXCorrs%:
 	python plot_oneBitXCorrs_multi_file_lists.py ${myPathToCode}/src/params/params$*plot rasterTestPlot
+	
+trainingPrep%: 
+	python training_prep.py params/trainingparams$*
+
+training: 
+	python training.py params/trainingparams1
 
 clean:
 	rm *.so
