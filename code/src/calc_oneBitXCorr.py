@@ -207,8 +207,11 @@ while currentWindowEndTime < endTime:
     # move on to the next time step
     lastWindowInFileSet = (thisWindowsFileSet[-1] == regFileSets[regFileSetIdx].nameOfLastFile())
     if lastWindowInFileSet: # if moving on to the next file set
-	regFileSetIdx = regFileSetIdx + 1
-        currentWindowStartTime = startTimes[regFileSetIdx]
+        if(regFileSetIdx < len(regFileSets)-1):
+	    regFileSetIdx = regFileSetIdx + 1
+            currentWindowStartTime = startTimes[regFileSetIdx]
+        else: # if you're at the end of your file sets
+            break 
     else: # if staying within the same file set, just march along
         currentWindowStartTime = currentWindowStartTime + windowOffset
     currentWindowEndTime = currentWindowStartTime + windowLength
