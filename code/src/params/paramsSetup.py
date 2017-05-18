@@ -18,7 +18,7 @@ outfileListFileStart = 'inter_results/outfileList'
 srcChList = 'sourceList.txt'
 
 # keep these file sets in order
-fileSetNames = ['fs1','fs2','fs3','fs4','fs6','fs7','fs8','fs9','fs10','fs11','fs12','fs13'] #fs5 covered an active recording period
+fileSetNames = ['fs1','fs2','fs3','fs4','fs6','fs7','fs10','fs11','fs12','fs13'] #fs5, fs8, fs9 covered an active recording period
 fileSetStartTimes = {'fs1':dt.datetime(2016,9,10,0,0,54,932000),'fs2':dt.datetime(2016,9,12,13,27,43,376000),'fs3':dt.datetime(2016,9,17,16,50,43,496000),'fs4':dt.datetime(2016,9,18,18,42,0,848000),'fs5':dt.datetime(2016,10,4,11,43,43,908000),'fs6':dt.datetime(2016,10,4,17,15,39,222000),'fs7':dt.datetime(2016,10,5,20,8,39,222000),'fs8':dt.datetime(2016,10,6,14,19,39,585000),'fs9':dt.datetime(2016,10,6,15,27,50,113000),'fs10':dt.datetime(2016,10,6,17,50,19,350000),'fs11':dt.datetime(2016,10,7,14,48,19,511000),'fs12':dt.datetime(2016,10,8,14,41,19,792000),'fs13':dt.datetime(2016,10,9,14,36,20,34000)}
 fileSetEndTimes = {'fs1':dt.datetime(2016,9,12,13,5,54,932000),'fs2':dt.datetime(2016,9,17,16,38,43,376000),'fs3':dt.datetime(2016,9,18,18,3,43,496000),'fs4':dt.datetime(2016,10,4,11,17,0,848000),'fs5':dt.datetime(2016,10,4,16,3,43,908000),'fs6':dt.datetime(2016,10,5,19,58,39,222000),'fs7':dt.datetime(2016,10,6,14,15,39,222000),'fs8':dt.datetime(2016,10,6,15,13,39,585000),'fs9':dt.datetime(2016,10,6,17,47,50,113000),'fs10':dt.datetime(2016,10,7,14,28,19,350000),'fs11':dt.datetime(2016,10,8,14,23,19,511000),'fs12':dt.datetime(2016,10,9,14,19,19,792000),'fs13':dt.datetime(2016,9,12,9,0,20,34000)}
 fileSetSecPerFile = 60
