@@ -86,7 +86,7 @@ for p in range(startParams,lastParams+1):
         data = np.zeros((nChannels,samplesPerWindow),dtype=np.float32)
         startIdx = 0
         for filename in thisWindowsFileSet: 
-           thisFileStartTime = regFileSets[regFileSetIdx].getTimeFromFilename(filename)
+            thisFileStartTime = regFileSets[regFileSetIdx].getTimeFromFilename(filename)
             thisFileEndTime = thisFileStartTime + dt.timedelta(seconds=secondsPerFile)
             startIdxReading = 0 # start index to read in filename
             if currentWindowStartTime > thisFileStartTime:
@@ -128,7 +128,7 @@ for p in range(startParams,lastParams+1):
                 nextWindowStartTime = startTimes[regFileSetIdx]
                 nZeroWindows = -1+int((nextWindowStartTime-currentWindowStartTime).total_seconds()/secondsPerWindowOffset)
                 nUpcomingWindows = nFiless[regFileSetIdx]*secondsPerFile/secondsPerWindowOffset #slight overpadding
-                np.pad(thisSpec,((0,nZeroWindows+nUpcomingWindows),(0,0),'constant',constant_values=((0,0),(0,0))) # pad array with zeros for those windows and upcoming ones for next file set
+                np.pad(thisSpec,((0,nZeroWindows+nUpcomingWindows),(0,0)),'constant',constant_values=((0,0),(0,0))) # pad array with zeros for those windows and upcoming ones for next file set
                 windowIdx = windowIdx + nZeroWindows
                 currentWindowStartTime = nextWindowStartTime
             else:

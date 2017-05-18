@@ -12,7 +12,8 @@ testMods:
 startSpecCh = 71
 endSpecCh = 80
 specPlot:
-	python calc_spec.py ${startSpecCh} ${endSpecCh} ${myPathToCode}/src/params/params 1 1
+	python calc_spec.py ${startSpecCh} ${endSpecCh} ${myPathToCode}/src/params/params 1 2
+	python plot_spec.py ${startSpecCh} ${endSpecCh} ${myPathToCode}/src/params/params 1 2 
 
 oneBitXCorr%:
 	python calc_oneBitXCorr.py ${myPathToCode}/src/params/params$* baseline
@@ -52,10 +53,10 @@ oneBitXCorrWeek1:
 
 oneBitXCorrWeek2:
 	#make oneBitXCorr8
-	make oneBitXCorr9
-	make oneBitXCorr10
-	make oneBitXCorr11
-	make oneBitXCorr12
+	#make oneBitXCorr9
+	#make oneBitXCorr10
+	#make oneBitXCorr11
+	#make oneBitXCorr12
 	make oneBitXCorr13
 	make oneBitXCorr14
 
