@@ -52,15 +52,17 @@ oneBitXCorrWeek1:
 	make oneBitXCorr7
 
 oneBitXCorrWeek2:
-	#make oneBitXCorr8
-	#make oneBitXCorr9
-	#make oneBitXCorr10
-	#make oneBitXCorr11
-	#make oneBitXCorr12
+	make oneBitXCorr8
+	make oneBitXCorr9
+	make oneBitXCorr10
+	make oneBitXCorr11
+	make oneBitXCorr12
 	make oneBitXCorr13
 	make oneBitXCorr14
 
 oneBitXCorrWeek3:
+	make oneBitXCorr13
+	make oneBitXCorr14
 	make oneBitXCorr15
 	make oneBitXCorr16
 	make oneBitXCorr17
