@@ -9,6 +9,7 @@ from reader import readTrace
 import fileSet as fs
 import regularFileSet as rfs
 import os
+import numpy.fft as ft
 
 
 # info 
@@ -21,6 +22,7 @@ nTraceHeader = 240
 paramsPath = sys.argv[3]
 startParams = int(sys.argv[4])
 lastParams = int(sys.argv[5])
+
 
 for p in range(startParams,lastParams+1):
     # get all the job info for this subset
@@ -67,6 +69,13 @@ for p in range(startParams,lastParams+1):
     outfileList = []
 
     regFileSetIdx = 0 # which regular file set in the list are you using now?
+    windowIdx = 0 # which index within the spectrum matrix are you at?
+
+    # create the spectrum matrix for the first file set, will append to this later as you go to the next file 
+    nUpcomingWindows = nFiless[regFileSetIdx]*secondsPerFile/secondsPerWindowOffset 
+    nFrqs = 1+samplesPerWindow/2
+    thisSpec = np.zeros((nUpcomingWindows,nFrqs),dtype=np.float32)
+
     # for each time window, do the cross correlation and write its xcorr to a file
     while currentWindowEndTime < endTime:
 
@@ -104,23 +113,35 @@ for p in range(startParams,lastParams+1):
             thisTrace.filter('bandpass',freqmin=minFrq,freqmax=maxFrq,corners=4,zerophase=True)
             dataRate[ch-startCh,:] = thisTrace.data
 
-        # get rid of laser drift,
+        # get rid of laser drift
         dataRate = dataRate - np.median(dataRate,axis=0)
 
-        # *****get the spec for this window and append to an array******
+        # get the spec for this window and append to an array
+        fourierTrans = ft.fft(dataRate,axis=1) # take FT spectrum for each channel
+	thisSpec[windowIdx,:] = np.sum(np.absolute(fourierTrans[:,:nFrqs]),axis=0)/nChannels # absolute value then average over channel set
 
         # move on to the next time step
         lastWindowInFileSet = (thisWindowsFileSet[-1] == regFileSets[regFileSetIdx].nameOfLastFile())
-        if lastWindowInFileSet: # if moving on to the next file set
-    	    regFileSetIdx = regFileSetIdx + 1
-        currentWindowStartTime = currentWindowStartTime + windowOffset
+        if lastWindowInFileSet: # if moving on to the next file set, figure out how much zero padding is needed
+            if(regFileSetIdx < len(regFileSets)-1):
+    	        regFileSetIdx = regFileSetIdx + 1
+                nextWindowStartTime = startTimes[regFileSetIdx]
+                nZeroWindows = -1+int((nextWindowStartTime-currentWindowStartTime).total_seconds()/secondsPerWindowOffset)
+                nUpcomingWindows = nFiless[regFileSetIdx]*secondsPerFile/secondsPerWindowOffset #slight overpadding
+                np.pad(thisSpec,((0,nZeroWindows+nUpcomingWindows),(0,0),'constant',constant_values=((0,0),(0,0))) # pad array with zeros for those windows and upcoming ones for next file set
+                windowIdx = windowIdx + nZeroWindows
+                currentWindowStartTime = nextWindowStartTime
+            else:
+                break
+        else: # just keep marching within this file set
+            currentWindowStartTime = currentWindowStartTime + windowOffset
+            windowIdx = windowIdx+1
         currentWindowEndTime = currentWindowStartTime + windowLength
 
     # do the output for this subset of data
-    outfileName = outfilePath + 'spec_'+str(p)+'_chs_'+str(startCh)+'_to_'+str(endCh)
-    np.savez(outfileName,thisSpec)
+    outfileName = outfilePath + 'spec'+str(p)+'_chs_'+str(startCh)+'_to_'+str(endCh)
+    np.savez(outfileName,thisSpec[:windowIdx+1,:])
     outfileList.append(outfileName)
-# *********do some output *******
 
 
 # write the list of output file names

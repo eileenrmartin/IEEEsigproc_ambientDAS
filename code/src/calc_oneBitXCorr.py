@@ -96,7 +96,7 @@ overallStartTimeForThisJob = min(startTimes)
 firstHr = dt.datetime(overallStartTimeForThisJob.year, overallStartTimeForThisJob.month, overallStartTimeForThisJob.day, overallStartTimeForThisJob.hour,0,0,0) 
 overallEndTimeForThisJob = endTime # assume lists within job parameters were put in in order ***shoudl generalize***
 lastIncludedHr = dt.datetime(overallEndTimeForThisJob.year, overallEndTimeForThisJob.month, overallEndTimeForThisJob.day, overallEndTimeForThisJob.hour,0,0,0)
-nHrs = int((lastIncludedHr-firstHr).total_seconds())/3600 # number of hours output with correlations
+nHrs = 1+int((lastIncludedHr-firstHr).total_seconds())/3600 # number of hours output with correlations
 nLagSamples = int(xCorrMaxTimeLagSeconds*samplesPerSecond)
 nLagSamplesTotal = 2*nLagSamples+1 # number of cross correlation lags 
 outputCorrelations = np.zeros((nHrs,len(srcChannels),nChannels,nLagSamplesTotal),dtype=np.float32)
