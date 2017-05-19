@@ -11,9 +11,12 @@ testMods:
 
 startSpecCh = 71
 endSpecCh = 80
+startParam = 1
+endParam = 2
+specCalc:
+	python calc_spec.py ${startSpecCh} ${endSpecCh} ${myPathToCode}/src/params/params ${startParam} ${endParam}
 specPlot:
-	python calc_spec.py ${startSpecCh} ${endSpecCh} ${myPathToCode}/src/params/params 1 2
-	python plot_spec.py ${startSpecCh} ${endSpecCh} ${myPathToCode}/src/params/params 1 2 
+	python plot_spec.py ${startSpecCh} ${endSpecCh} ${myPathToCode}/src/params/params ${startParam} ${endParam} 
 
 oneBitXCorr%:
 	python calc_oneBitXCorr.py ${myPathToCode}/src/params/params$* baseline
@@ -33,6 +36,11 @@ trainingPrep%:
 
 training: 
 	python training.py params/trainingparams1
+
+convergeCalc:
+	python calc_convergence.py ${myPathToCode}/src/params/params baseline ${startParam} ${endParam}
+
+#convergencePlot:
 
 clean:
 	rm *.so

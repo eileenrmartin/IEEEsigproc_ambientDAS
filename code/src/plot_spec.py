@@ -29,6 +29,7 @@ sys.path.append(paramsPath+str(p))
 from params import *
 outFile = open(outfileListFile+'_spec.txt','r')
 filenamesBasic = outFile.readlines()
+filenamesBasic = [f.strip('\n') for f in filenamesBasic]
 filenames = [f+'.npz' for f in filenamesBasic]
 
 # collect all the spectra in all these files
@@ -48,11 +49,18 @@ for i,f in enumerate(filenames):
     allSpec[windowIdx:windowIdx+listOfNWindows[i],:] = listOfSpecs[i]
     windowIdx = windowIdx + listOfNWindows[i]
 
-maxVal = np.log(np.percentile(allSpec,97.5))
-minVal = np.log(np.percentile(allSpec,2.5))
-plt.imshow(np.log(allSpec),interpolation='nearest',aspect='auto')
+secondsPerDay = float(24*3600)
+nDays = windowIdx*secondsPerWindowOffset/secondsPerDay
+epsilon = 0.0001
+allSpec = allSpec + epsilon
+maxVal = np.percentile(np.log(allSpec),99)
+minVal = np.percentile(np.log(allSpec),5)
+plt.imshow(np.log(np.transpose(allSpec)),interpolation='nearest',aspect='auto',cmap=plt.get_cmap('inferno'),vmax=maxVal,vmin=minVal,extent=[0,nDays,maxFrq,maxFrq/float(nFrqs)])
 plt.colorbar()
 plt.title('strain rate spectrum')
+plt.ylabel('frequency (Hz)')
+plt.xlabel('days after Sep. 10, 2016')
 plt.savefig(outfilePath+'spec_plot.pdf')
+plt.clf()
 
 
