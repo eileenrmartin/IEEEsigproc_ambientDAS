@@ -85,7 +85,6 @@ for p in range(startParams,lastParams+1):
 
     # for each time window, do the cross correlation and write its xcorr to a file
     while currentWindowEndTime < endTime:
-
         # figure out start time in case there was a jump
         thisWindowsFileSet = regFileSets[regFileSetIdx].getFileNamesInRange(currentWindowStartTime,currentWindowEndTime)
         print(currentWindowStartTime)

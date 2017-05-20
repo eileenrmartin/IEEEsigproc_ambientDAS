@@ -20,12 +20,10 @@ endCh = params.endCh
 nChannels = endCh-startCh+1
 # read cross-correlation lag extents
 nLags = 0 # set later from size of matrices
-outfilePath = params.outfilePath
+outfilePath = '/scratch/'#params.outfilePath
 
 sys.path.remove(paramsPath+str(startParams))
 
-
-parts=['/data/','year4','/','month','/','day','/cbt_processed_','year4','month','day','_','hour24start0','minute','second','.','millisecond','+0000.sgy']
 
 listOfAllXCorrs = []
 for p in range(startParams,lastParams+1):
@@ -43,7 +41,7 @@ for p in range(startParams,lastParams+1):
     # read xcorrs for the day
     filename = listOfAllDataFiles[0] # theres just one in there
     todayXCorrs = np.load(filename)['arr_0']
-    nHrs = xCorr.shape[0]
+    nHrs = todayXCorrs.shape[0]
     if(nHrs > 24):
         todayXCorrs = todayXCorrs[:24,:,:,:]
     nLags = todayXCorrs.shape[3]
@@ -67,13 +65,16 @@ for xcorr in listOfAllXCorrs:
 
 # get the average long term cross correlation during this time
 longTermAvg = np.sum(allXCorrs,axis=0)/nTotalHrs
-longTermAvgXCorrFilename = outfilePath+'longTermAvgXCorr_'+str(startParams)+'_to_'+str(lastParams)
+longTermAvgXCorrFilename = outfilePath+'longTermAvgXCorr_'+str(startParams)+'_to_'+str(lastParams)+'_'+filteredFlag
 np.savez(longTermAvgXCorrFilename,longTermAvg)
 
 
 def zeroLagCorr(longterm,shortterm):
-    corr = np.dot(longterm,shortterm)/(la.norm(longterm)*la.norm(shortterm))
-    return corr
+    if(la.norm(shortterm) == 0):
+        return 0
+    else:
+        corr = np.dot(longterm,shortterm)/(la.norm(longterm)*la.norm(shortterm))
+        return corr
 
 # for each of the window widths calculate and save the convergence correlation metric
 for window in windowHrs:
@@ -81,9 +82,10 @@ for window in windowHrs:
 
     # calculate a set of subset of hours averages, continuous hours the number of hours specified
     nWindows = nTotalHrs-window+1
+    print('n windows '+str(nWindows))
     subAvgXCorr = np.zeros((nWindows,len(srcChannels),nChannels,nLags),dtype=np.float32)
     for w in range(window):
-        subAvgXCorr = subAvgXCorr + allXCorrs[w::window,:,:,:]
+        subAvgXCorr = subAvgXCorr + allXCorrs[w:nTotalHrs-window+w+1,:,:,:]
     
     # create matrix of zero time lag correlations to measure convergence to long term avg
     RC = np.zeros((nWindows,len(srcChannels),nChannels),dtype=np.float32)
@@ -92,8 +94,8 @@ for window in windowHrs:
             longtermSrc = longTermAvg[s,:,:]
             shorttermSrc = subAvgXCorr[w,s,:,:]
             for r in range(nChannels):
-                RC[w,s,r] = zeroLagCorr(longtermSrc[r,:],shortTermSrc[r,:])
+                RC[w,s,r] = zeroLagCorr(longtermSrc[r,:],shorttermSrc[r,:])
 
-    thisWindowOutfile = outfilePath+'convergence_of_'+str(window)+'_hr_windows'
+    thisWindowOutfile = outfilePath+'convergence_of_'+str(window)+'_hr_windows_'+filteredFlag
     np.savez(thisWindowOutfile,RC)
    

@@ -12,7 +12,7 @@ testMods:
 startSpecCh = 71
 endSpecCh = 80
 startParam = 1
-endParam = 2
+endParam = 30
 specCalc:
 	python calc_spec.py ${startSpecCh} ${endSpecCh} ${myPathToCode}/src/params/params ${startParam} ${endParam}
 specPlot:
@@ -40,7 +40,17 @@ training:
 convergeCalc:
 	python calc_convergence.py ${myPathToCode}/src/params/params baseline ${startParam} ${endParam}
 
-#convergencePlot:
+convergencePlot:
+	python plot_convergence.py ${myPathToCode}/src/params/params baseline ${startParam} ${endParam}
+
+
+filteredConvergeCalc:
+	python calc_convergence.py ${myPathToCode}/src/params/params filtered ${startParam} ${endParam}
+
+filteredConvergencePlot:
+	python plot_convergence.py ${myPathToCode}/src/params/params filtered ${startParam} ${endParam}
+
+
 
 clean:
 	rm *.so
